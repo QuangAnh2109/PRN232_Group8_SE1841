@@ -28,8 +28,6 @@ namespace Api.Models
         [Phone]
         public string PhoneNumber { get; set; } = null!;
         
-        [Required]
-        public bool IsActive { get; set; }
 
         public ICollection<User>? Users { get; set; }
 
