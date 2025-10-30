@@ -1,6 +1,8 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Api.DTO;
 using Api.Services.Interface;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -26,12 +28,12 @@ namespace Api.Controllers
             {
                 if (await _accountService.RegisterAccountAsync(register))
                 {
-                    return Ok(register.Username);
+                    return Ok();
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError(ex, "Error occurred during registration");
             }
             return BadRequest();
         }
@@ -39,7 +41,33 @@ namespace Api.Controllers
         [HttpPost("token")]
         public async Task<IActionResult> GetJwtToken([FromBody] LoginDTO login)
         {
-            
+            try
+            {
+                return Ok(await _accountService.GetJwtTokenAsync(login));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred during login");
+            }
+            return BadRequest();
+        }
+        
+        [Authorize]
+        [HttpGet("token")]
+        public async Task<IActionResult> GetAccessToken()
+        {
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var lastModifiedTime = HttpContext.User.FindFirstValue(ClaimTypes.Version);
+            if (userId == null || lastModifiedTime == null) return BadRequest();
+            try
+            {
+                return Ok(await _accountService.GetAccessTokenAsync(int.Parse(userId), DateTime.Parse(lastModifiedTime)));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred during get access token");
+            }
+            return BadRequest();
         }
 
 

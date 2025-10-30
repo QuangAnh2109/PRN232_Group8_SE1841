@@ -35,6 +35,9 @@ namespace Api.Models
 
         [Required]
         public bool IsActive { get; set; }
+        
+        [Required]
+        public DateTime LastModifiedTime { get; set; }
 
         [Required]
         [ForeignKey(nameof(Role))]

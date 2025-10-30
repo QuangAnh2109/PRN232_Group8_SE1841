@@ -1,4 +1,5 @@
-﻿using Api.DTO;
+﻿using System.Runtime.InteropServices.JavaScript;
+using Api.DTO;
 
 namespace Api.Services.Interface
 {
@@ -6,8 +7,8 @@ namespace Api.Services.Interface
     {
         Task<bool> RegisterAccountAsync(RegisterAccountDTO register);
 
-        Task<String> GetRefreshTokenAsync(LoginDTO login);
+        Task<TokenDTO> GetJwtTokenAsync(LoginDTO login);
 
-        Task<String> GetAccessTokenAsync(String refreshToken);
+        Task<string> GetAccessTokenAsync(int userId, DateTime lastModifiedTime);
     }
 }
