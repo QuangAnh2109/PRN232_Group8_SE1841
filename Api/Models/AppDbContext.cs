@@ -27,7 +27,8 @@ namespace Api.Models
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<ClassStudent>()
-                .HasKey(cu => new { cu.ClassId, cu.StudentId });
+                .HasIndex(cu => new { cu.ClassId, cu.StudentId })
+                .IsUnique();
 
             modelBuilder.Entity<User>()
                 .HasIndex(User => new { User.Username, User.IsDeleted })
@@ -58,26 +59,11 @@ namespace Api.Models
                 foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
             }
 
-            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-            {
-                if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
-                {
-                    var parameter = Expression.Parameter(entityType.ClrType, "e");
-                    var property = Expression.Property(parameter, nameof(BaseEntity.IsDeleted));
-                    var filter = Expression.Lambda(
-                        Expression.Equal(property, Expression.Constant(false, typeof(bool?))),
-                        parameter
-                    );
-
-                    modelBuilder.Entity(entityType.ClrType).HasQueryFilter(filter);
-                }
-            }
-
             // Seed initial data for Role
             modelBuilder.Entity<Role>().HasData(
                 new Role
                 {
-                    RoleId = DefaultValues.AdminRoleId,
+                    Id = DefaultValues.AdminRoleId,
                     Name = DefaultValues.AdminRole,
                     Description = "Administrator role with full permissions for system manager",
                     PermissionLevel = 1,
@@ -89,7 +75,7 @@ namespace Api.Models
                 },
                 new Role
                 {
-                    RoleId = DefaultValues.ManagerRoleId,
+                    Id = DefaultValues.ManagerRoleId,
                     Name = DefaultValues.ManagerRole,
                     Description = "Manager role with full permissions for center manager",
                     PermissionLevel = 2,
@@ -101,7 +87,7 @@ namespace Api.Models
                 },
                 new Role
                 {
-                    RoleId = DefaultValues.TeacherRoleId,
+                    Id = DefaultValues.TeacherRoleId,
                     Name = DefaultValues.TeacherRole,
                     Description = "Teacher role with full permissions for class manager",
                     PermissionLevel = 3,
@@ -113,7 +99,7 @@ namespace Api.Models
                 },
                 new Role
                 {
-                    RoleId = DefaultValues.StudentRoleId,
+                    Id = DefaultValues.StudentRoleId,
                     Name = DefaultValues.StudentRole,
                     Description = "Student role",
                     PermissionLevel = 3,
@@ -124,48 +110,6 @@ namespace Api.Models
                     IsDeleted = false,
                 }
             );
-
-            //modelBuilder.Entity<User>().HasData(
-            //    new User
-            //    {
-            //        UserId = 1,
-            //        Username = "admin",
-            //        Email = "admin@gmail.com",
-            //        FullName = "Admin",
-            //        PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin"),
-            //        IsActive = true,
-            //        RoleId = DefaultValues.AdminRoleId,
-            //        CreatedBy = DefaultValues.SystemId,
-            //        UpdatedBy = DefaultValues.SystemId,
-            //        IsDeleted = false,
-            //    },
-            //    new User
-            //    {
-            //        UserId = 2,
-            //        Username = "teacher",
-            //        Email = "teacher@gmail.com",
-            //        FullName = "Teacher",
-            //        PasswordHash = BCrypt.Net.BCrypt.HashPassword("teacher"),
-            //        IsActive = true,
-            //        RoleId = DefaultValues.TeacherRoleId,
-            //        CreatedBy = DefaultValues.SystemId,
-            //        UpdatedBy = DefaultValues.SystemId,
-            //        IsDeleted = false,
-            //    },
-            //    new User
-            //    {
-            //        UserId = 3,
-            //        Username = "student",
-            //        Email = "student@gmail.com",
-            //        FullName = "Student",
-            //        PasswordHash = BCrypt.Net.BCrypt.HashPassword("student"),
-            //        IsActive = true,
-            //        RoleId = DefaultValues.StudentRoleId,
-            //        CreatedBy = DefaultValues.SystemId,
-            //        UpdatedBy = DefaultValues.SystemId,
-            //        IsDeleted = false,
-            //    }
-            //);
         }
     }
 }

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Api.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,73 +17,73 @@ namespace Api.Migrations
                 name: "Centers",
                 columns: table => new
                 {
-                    CenterId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ManagerId = table.Column<int>(type: "int", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<int>(type: "int", nullable: false),
                     UpdatedBy = table.Column<int>(type: "int", nullable: false),
                     RecordNumber = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Centers", x => x.CenterId);
+                    table.PrimaryKey("PK_Centers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Roles",
                 columns: table => new
                 {
-                    RoleId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     PermissionLevel = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<int>(type: "int", nullable: false),
                     UpdatedBy = table.Column<int>(type: "int", nullable: false),
                     RecordNumber = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Roles", x => x.RoleId);
+                    table.PrimaryKey("PK_Roles", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Tokens",
                 columns: table => new
                 {
-                    TokenId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Exp = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UseNumber = table.Column<int>(type: "int", nullable: false),
-                    Revoked = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<int>(type: "int", nullable: false),
                     UpdatedBy = table.Column<int>(type: "int", nullable: false),
                     RecordNumber = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tokens", x => x.TokenId);
+                    table.PrimaryKey("PK_Tokens", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Classes",
                 columns: table => new
                 {
-                    ClassId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     CenterId = table.Column<int>(type: "int", nullable: false),
@@ -94,16 +94,17 @@ namespace Api.Migrations
                     CreatedBy = table.Column<int>(type: "int", nullable: false),
                     UpdatedBy = table.Column<int>(type: "int", nullable: false),
                     RecordNumber = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Classes", x => x.ClassId);
+                    table.PrimaryKey("PK_Classes", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Classes_Centers_CenterId",
                         column: x => x.CenterId,
                         principalTable: "Centers",
-                        principalColumn: "CenterId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -111,38 +112,38 @@ namespace Api.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Username = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AvatarUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CenterId = table.Column<int>(type: "int", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    LastModifiedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     RoleId = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<int>(type: "int", nullable: false),
                     UpdatedBy = table.Column<int>(type: "int", nullable: false),
                     RecordNumber = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.UserId);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Users_Centers_CenterId",
                         column: x => x.CenterId,
                         principalTable: "Centers",
-                        principalColumn: "CenterId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Users_Roles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "Roles",
-                        principalColumn: "RoleId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -150,7 +151,7 @@ namespace Api.Migrations
                 name: "Timesheets",
                 columns: table => new
                 {
-                    TimesheetId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ClassId = table.Column<int>(type: "int", nullable: false),
                     StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -158,22 +159,22 @@ namespace Api.Migrations
                     IsOnline = table.Column<bool>(type: "bit", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<int>(type: "int", nullable: false),
                     UpdatedBy = table.Column<int>(type: "int", nullable: false),
                     RecordNumber = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Timesheets", x => x.TimesheetId);
+                    table.PrimaryKey("PK_Timesheets", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Timesheets_Classes_ClassId",
                         column: x => x.ClassId,
                         principalTable: "Classes",
-                        principalColumn: "ClassId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -181,6 +182,8 @@ namespace Api.Migrations
                 name: "ClassStudents",
                 columns: table => new
                 {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     StudentId = table.Column<int>(type: "int", nullable: false),
                     ClassId = table.Column<int>(type: "int", nullable: false),
                     JoinedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -189,22 +192,23 @@ namespace Api.Migrations
                     CreatedBy = table.Column<int>(type: "int", nullable: false),
                     UpdatedBy = table.Column<int>(type: "int", nullable: false),
                     RecordNumber = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ClassStudents", x => new { x.ClassId, x.StudentId });
+                    table.PrimaryKey("PK_ClassStudents", x => x.Id);
                     table.ForeignKey(
                         name: "FK_ClassStudents_Classes_ClassId",
                         column: x => x.ClassId,
                         principalTable: "Classes",
-                        principalColumn: "ClassId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ClassStudents_Users_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Users",
-                        principalColumn: "UserId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -212,7 +216,7 @@ namespace Api.Migrations
                 name: "Attendance",
                 columns: table => new
                 {
-                    AttendanceId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TimesheetId = table.Column<int>(type: "int", nullable: false),
                     StudentId = table.Column<int>(type: "int", nullable: false),
@@ -223,34 +227,35 @@ namespace Api.Migrations
                     CreatedBy = table.Column<int>(type: "int", nullable: false),
                     UpdatedBy = table.Column<int>(type: "int", nullable: false),
                     RecordNumber = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Attendance", x => x.AttendanceId);
+                    table.PrimaryKey("PK_Attendance", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Attendance_Timesheets_TimesheetId",
                         column: x => x.TimesheetId,
                         principalTable: "Timesheets",
-                        principalColumn: "TimesheetId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Attendance_Users_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Users",
-                        principalColumn: "UserId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.InsertData(
                 table: "Roles",
-                columns: new[] { "RoleId", "CreatedAt", "CreatedBy", "Description", "IsActive", "IsDeleted", "Name", "PermissionLevel", "RecordNumber", "UpdatedAt", "UpdatedBy" },
+                columns: new[] { "Id", "CreatedAt", "CreatedBy", "Description", "IsActive", "IsDeleted", "Name", "PermissionLevel", "RecordNumber", "UpdatedAt", "UpdatedBy" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local), 0, "Administrator role with full permissions for system manager", false, false, "Admin", 1, 1, new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local), 0 },
-                    { 2, new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local), 0, "Manager role with full permissions for center manager", false, false, "Manager", 2, 1, new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local), 0 },
-                    { 3, new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local), 0, "Teacher role with full permissions for class manager", false, false, "Teacher", 3, 1, new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local), 0 },
-                    { 4, new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local), 0, "Student role", false, false, "Student", 3, 1, new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local), 0 }
+                    { 1, new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local), 0, "Administrator role with full permissions for system manager", true, false, "Admin", 1, 1, new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local), 0 },
+                    { 2, new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local), 0, "Manager role with full permissions for center manager", true, false, "Manager", 2, 1, new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local), 0 },
+                    { 3, new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local), 0, "Teacher role with full permissions for class manager", true, false, "Teacher", 3, 1, new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local), 0 },
+                    { 4, new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local), 0, "Student role", true, false, "Student", 3, 1, new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local), 0 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -281,6 +286,12 @@ namespace Api.Migrations
                 columns: new[] { "Name", "CenterId", "IsDeleted" },
                 unique: true,
                 filter: "[IsDeleted] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClassStudents_ClassId_StudentId",
+                table: "ClassStudents",
+                columns: new[] { "ClassId", "StudentId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClassStudents_StudentId_ClassId_IsDeleted",

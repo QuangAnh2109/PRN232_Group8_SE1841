@@ -1,9 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Api.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Api.Models
+namespace Api.DTO
 {
-    public class User : BaseEntity<int>
+    public class UpdateStudentDTO
     {
         [Required]
         [MaxLength(100)]
@@ -28,7 +29,7 @@ namespace Api.Models
         [Required]
         [ForeignKey(nameof(Api.Models.Center))]
         public int CenterId { get; set; }
-        
+
         [Required]
         public DateTime LastModifiedTime { get; set; }
 

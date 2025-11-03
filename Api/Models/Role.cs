@@ -2,11 +2,8 @@
 
 namespace Api.Models
 {
-    public class Role : BaseEntity
+    public class Role : BaseEntity<int>
     {
-        [Key]
-        public int RoleId { get; set; }
-
         [Required]
         [MaxLength(50)]
         public string Name { get; set; } = null!;
@@ -16,9 +13,6 @@ namespace Api.Models
 
         [Required]
         public int PermissionLevel { get; set; }
-
-        [Required]
-        public bool IsActive { get; set; }
 
         public ICollection<User>? Users { get; set; }
     }

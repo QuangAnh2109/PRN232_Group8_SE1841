@@ -3,11 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Api.Models
 {
-    public class Class : BaseEntity
+    public class Class : BaseEntity<int>
     {
-        [Key]
-        public int ClassId { get; set; }
-
         [Required]
         [MaxLength(100)]
         public string Name { get; set; } = null!;

@@ -2,8 +2,11 @@
 
 namespace Api.Models
 {
-    public class BaseEntity
+    public abstract class BaseEntity<TKey> where TKey : struct, IEquatable<TKey>
     {
+        [Key]
+        public TKey Id { get; set; }
+
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
@@ -18,6 +21,9 @@ namespace Api.Models
 
         [Required]
         public int RecordNumber { get; set; } = 1;
+
+        [Required]
+        public bool IsActive { get; set; } = true;
 
         public bool? IsDeleted { get; set; } = false;
     }

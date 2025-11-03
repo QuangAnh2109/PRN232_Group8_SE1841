@@ -4,6 +4,6 @@ namespace Api.Repository.Interface
 {
     public interface IUserRepository
     {
-        Task<int> AddUserAsync(List<User> users);
+        Task AddUserAsync(IEnumerable<User> users);
     }
 }

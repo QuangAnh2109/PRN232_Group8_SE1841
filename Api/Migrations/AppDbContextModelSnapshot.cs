@@ -24,17 +24,20 @@ namespace Api.Migrations
 
             modelBuilder.Entity("Api.Models.Attendance", b =>
                 {
-                    b.Property<int>("AttendanceId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AttendanceId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("CreatedBy")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsAttenddance")
                         .HasColumnType("bit");
@@ -61,7 +64,7 @@ namespace Api.Migrations
                     b.Property<int>("UpdatedBy")
                         .HasColumnType("int");
 
-                    b.HasKey("AttendanceId");
+                    b.HasKey("Id");
 
                     b.HasIndex("StudentId");
 
@@ -72,11 +75,11 @@ namespace Api.Migrations
 
             modelBuilder.Entity("Api.Models.Center", b =>
                 {
-                    b.Property<int>("CenterId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CenterId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Address")
                         .HasMaxLength(200)
@@ -120,7 +123,7 @@ namespace Api.Migrations
                     b.Property<int>("UpdatedBy")
                         .HasColumnType("int");
 
-                    b.HasKey("CenterId");
+                    b.HasKey("Id");
 
                     b.HasIndex("Name", "IsDeleted")
                         .IsUnique()
@@ -131,11 +134,11 @@ namespace Api.Migrations
 
             modelBuilder.Entity("Api.Models.Class", b =>
                 {
-                    b.Property<int>("ClassId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ClassId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CenterId")
                         .HasColumnType("int");
@@ -148,6 +151,9 @@ namespace Api.Migrations
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
@@ -169,7 +175,7 @@ namespace Api.Migrations
                     b.Property<int>("UpdatedBy")
                         .HasColumnType("int");
 
-                    b.HasKey("ClassId");
+                    b.HasKey("Id");
 
                     b.HasIndex("CenterId");
 
@@ -182,10 +188,13 @@ namespace Api.Migrations
 
             modelBuilder.Entity("Api.Models.ClassStudent", b =>
                 {
-                    b.Property<int>("ClassId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("StudentId")
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ClassId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -193,6 +202,9 @@ namespace Api.Migrations
 
                     b.Property<int>("CreatedBy")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
@@ -203,13 +215,19 @@ namespace Api.Migrations
                     b.Property<int>("RecordNumber")
                         .HasColumnType("int");
 
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("UpdatedBy")
                         .HasColumnType("int");
 
-                    b.HasKey("ClassId", "StudentId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClassId", "StudentId")
+                        .IsUnique();
 
                     b.HasIndex("StudentId", "ClassId", "IsDeleted")
                         .IsUnique()
@@ -220,11 +238,11 @@ namespace Api.Migrations
 
             modelBuilder.Entity("Api.Models.Role", b =>
                 {
-                    b.Property<int>("RoleId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoleId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -259,7 +277,7 @@ namespace Api.Migrations
                     b.Property<int>("UpdatedBy")
                         .HasColumnType("int");
 
-                    b.HasKey("RoleId");
+                    b.HasKey("Id");
 
                     b.HasIndex("Name", "IsDeleted")
                         .IsUnique()
@@ -270,11 +288,11 @@ namespace Api.Migrations
                     b.HasData(
                         new
                         {
-                            RoleId = 1,
+                            Id = 1,
                             CreatedAt = new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local),
                             CreatedBy = 0,
                             Description = "Administrator role with full permissions for system manager",
-                            IsActive = false,
+                            IsActive = true,
                             IsDeleted = false,
                             Name = "Admin",
                             PermissionLevel = 1,
@@ -284,11 +302,11 @@ namespace Api.Migrations
                         },
                         new
                         {
-                            RoleId = 2,
+                            Id = 2,
                             CreatedAt = new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local),
                             CreatedBy = 0,
                             Description = "Manager role with full permissions for center manager",
-                            IsActive = false,
+                            IsActive = true,
                             IsDeleted = false,
                             Name = "Manager",
                             PermissionLevel = 2,
@@ -298,11 +316,11 @@ namespace Api.Migrations
                         },
                         new
                         {
-                            RoleId = 3,
+                            Id = 3,
                             CreatedAt = new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local),
                             CreatedBy = 0,
                             Description = "Teacher role with full permissions for class manager",
-                            IsActive = false,
+                            IsActive = true,
                             IsDeleted = false,
                             Name = "Teacher",
                             PermissionLevel = 3,
@@ -312,11 +330,11 @@ namespace Api.Migrations
                         },
                         new
                         {
-                            RoleId = 4,
+                            Id = 4,
                             CreatedAt = new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local),
                             CreatedBy = 0,
                             Description = "Student role",
-                            IsActive = false,
+                            IsActive = true,
                             IsDeleted = false,
                             Name = "Student",
                             PermissionLevel = 3,
@@ -328,11 +346,11 @@ namespace Api.Migrations
 
             modelBuilder.Entity("Api.Models.Timesheet", b =>
                 {
-                    b.Property<int>("TimesheetId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TimesheetId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ClassId")
                         .HasColumnType("int");
@@ -376,7 +394,7 @@ namespace Api.Migrations
                     b.Property<int>("UpdatedBy")
                         .HasColumnType("int");
 
-                    b.HasKey("TimesheetId");
+                    b.HasKey("Id");
 
                     b.HasIndex("ClassId");
 
@@ -385,7 +403,7 @@ namespace Api.Migrations
 
             modelBuilder.Entity("Api.Models.Token", b =>
                 {
-                    b.Property<Guid>("TokenId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -398,14 +416,14 @@ namespace Api.Migrations
                     b.Property<DateTime>("Exp")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<int>("RecordNumber")
                         .HasColumnType("int");
-
-                    b.Property<bool>("Revoked")
-                        .HasColumnType("bit");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -416,21 +434,18 @@ namespace Api.Migrations
                     b.Property<int>("UseNumber")
                         .HasColumnType("int");
 
-                    b.HasKey("TokenId");
+                    b.HasKey("Id");
 
                     b.ToTable("Tokens");
                 });
 
             modelBuilder.Entity("Api.Models.User", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
-
-                    b.Property<string>("AvatarUrl")
-                        .HasColumnType("nvarchar(max)");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CenterId")
                         .HasColumnType("int");
@@ -457,6 +472,9 @@ namespace Api.Migrations
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<DateTime>("LastModifiedTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -481,7 +499,7 @@ namespace Api.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.HasKey("UserId");
+                    b.HasKey("Id");
 
                     b.HasIndex("CenterId");
 

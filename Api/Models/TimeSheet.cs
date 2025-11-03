@@ -3,11 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Api.Models
 {
-    public class Timesheet : BaseEntity
+    public class Timesheet : BaseEntity<int>
     {
-        [Key]
-        public int TimesheetId { get; set; }
-
         [Required]
         [ForeignKey(nameof(Api.Models.Class))]
         public int ClassId { get; set; }
@@ -27,9 +24,6 @@ namespace Api.Models
 
         [MaxLength(500)]
         public string? Description { get; set; }
-
-        [Required]
-        public bool IsActive { get; set; }
 
         public Class Class { get; set; } = null!;
     }

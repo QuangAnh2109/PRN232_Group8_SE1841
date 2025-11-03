@@ -1,3 +1,4 @@
+using Api.Middleware;
 using Api.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,6 +28,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapControllers();
 

@@ -3,11 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Api.Models
 {
-    public class Center : BaseEntity
+    public class Center : BaseEntity<int>
     {
-        [Key]
-        public int CenterId { get; set; }
-
         [Required]
         [MaxLength(100)]
         public string Name { get; set; } = null!;
@@ -27,9 +24,6 @@ namespace Api.Models
         [Required]
         [Phone]
         public string PhoneNumber { get; set; } = null!;
-        
-        [Required]
-        public bool IsActive { get; set; }
 
         public ICollection<User>? Users { get; set; }
 

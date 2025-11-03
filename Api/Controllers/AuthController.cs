@@ -1,9 +1,10 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
+using Api.Constants;
 using Api.DTO;
 using Api.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Api.Controllers
 {
@@ -24,32 +25,14 @@ namespace Api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterAccountDTO register)
         {
-            try
-            {
-                if (await _accountService.RegisterAccountAsync(register))
-                {
-                    return Ok();
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred during registration");
-            }
-            return BadRequest();
+            await _accountService.RegisterAccountAsync(register);
+            return Ok();
         }
 
         [HttpPost("token")]
         public async Task<IActionResult> GetJwtToken([FromBody] LoginDTO login)
         {
-            try
-            {
-                return Ok(await _accountService.GetJwtTokenAsync(login));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred during login");
-            }
-            return BadRequest();
+            return Ok(await _accountService.GetJwtTokenAsync(login));
         }
         
         [Authorize]
@@ -58,16 +41,11 @@ namespace Api.Controllers
         {
             var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var lastModifiedTime = HttpContext.User.FindFirstValue(ClaimTypes.Version);
-            if (userId == null || lastModifiedTime == null) return BadRequest();
-            try
-            {
+
+            if (userId == null || lastModifiedTime == null) 
+                return BadRequest();
+            else
                 return Ok(await _accountService.GetAccessTokenAsync(int.Parse(userId), DateTime.Parse(lastModifiedTime)));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred during get access token");
-            }
-            return BadRequest();
         }
 
 

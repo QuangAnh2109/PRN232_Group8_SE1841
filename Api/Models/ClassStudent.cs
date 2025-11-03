@@ -3,14 +3,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Api.Models
 {
-    public class ClassStudent : BaseEntity
+    public class ClassStudent : BaseEntity<int>
     {
-        [Key]
         [Required]
         [ForeignKey(nameof(Api.Models.User))]
         public int StudentId { get; set; }
 
-        [Key]
         [Required]
         [ForeignKey(nameof(Api.Models.Class))]
         public int ClassId { get; set; }

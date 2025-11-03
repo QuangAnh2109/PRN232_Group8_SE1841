@@ -4,6 +4,6 @@ namespace Api.Repository.Interface
 {
     public interface ICenterRepository
     {
-        Task<int> AddCenterAsync(List<Center> centers);
+        Task<int> AddCenterAsync(IEnumerable<Center> centers);
     }
 }

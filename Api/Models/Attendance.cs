@@ -3,11 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Api.Models
 {
-    public class Attendance : BaseEntity
+    public class Attendance : BaseEntity<int>
     {
-        [Key]
-        public int AttendanceId { get; set; }
-
         [Required]
         [ForeignKey(nameof(Api.Models.Timesheet))]
         public int TimesheetId { get; set; }
