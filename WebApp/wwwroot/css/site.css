@@ -1,5 +1,6 @@
 html {
   font-size: 14px;
+  scroll-behavior: smooth;
 }
 
 @media (min-width: 768px) {
@@ -9,7 +10,7 @@ html {
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #667eea;
 }
 
 html {
@@ -19,4 +20,183 @@ html {
 
 body {
   margin-bottom: 60px;
+  background-color: #f8f9fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    border: none;
+    border-radius: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: 600;
+    border-radius: 12px 12px 0 0 !important;
+    padding: 1.25rem;
+}
+
+.modal-content {
+    border-radius: 12px;
+    border: none;
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px 12px 0 0;
+}
+
+.btn-group-sm > .btn, .btn-sm {
+    margin-right: 0.25rem;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+    background: linear-gradient(135deg, #5568d3 0%, #6a3f91 100%);
+}
+
+.btn-success {
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.btn-danger {
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.btn-warning {
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.btn-info {
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.alert {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.navbar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.navbar-nav .nav-link {
+    font-weight: 500;
+    transition: opacity 0.2s;
+}
+
+.navbar-nav .nav-link:hover {
+    opacity: 0.8;
+}
+
+.badge {
+    padding: 0.4em 0.8em;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.table {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.table thead th {
+    background: #f8f9fa;
+    font-weight: 600;
+    border-bottom: 2px solid #dee2e6;
+    color: #495057;
+}
+
+.table-hover tbody tr {
+    transition: background-color 0.2s;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(102, 126, 234, 0.05);
+}
+
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+    padding: 0.625rem 0.875rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+#alertContainer {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    z-index: 1050;
+    min-width: 300px;
+}
+
+.page-header {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.page-header h2 {
+    color: #667eea;
+    font-weight: 700;
+    margin: 0;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+    color: #667eea;
 }
