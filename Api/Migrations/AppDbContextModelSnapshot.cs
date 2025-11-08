@@ -169,6 +169,9 @@ namespace Api.Migrations
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("TeacherId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -178,6 +181,8 @@ namespace Api.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CenterId");
+
+                    b.HasIndex("TeacherId");
 
                     b.HasIndex("Name", "CenterId", "IsDeleted")
                         .IsUnique()
@@ -543,7 +548,14 @@ namespace Api.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Api.Models.User", "Teacher")
+                        .WithMany()
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Center");
+
+                    b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("Api.Models.ClassStudent", b =>
