@@ -1,0 +1,465 @@
+@{
+    ViewData["Title"] = "Class Management";
+}
+
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h2 id="pageTitle">My Classes</h2>
+                <p class="text-muted mb-0" id="pageSubtitle">View your enrolled classes</p>
+            </div>
+            <div class="col text-end" id="actionButtons">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#classModal" onclick="ClassManager.showCreateModal()">
+                    Add New Class
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="alertContainer"></div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Class List</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">ID</th>
+                            <th style="width: 20%;">Class Name</th>
+                            <th style="width: 15%;">Center</th>
+                            <th style="width: 110px;">Start Date</th>
+                            <th style="width: 110px;">End Date</th>
+                            <th style="width: 90px;">Status</th>
+                            <th id="actionsHeader">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="classTableBody">
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2 text-muted">Loading classes...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="classModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="classModalTitle">Add New Class</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="classForm">
+                <div class="modal-body">
+                    <input type="hidden" id="classId">
+                    <div class="mb-3">
+                        <label for="className" class="form-label">Class Name</label>
+                        <input type="text" class="form-control" id="className" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="centerId" class="form-label">Center</label>
+                        <select class="form-select" id="centerId" required>
+                            <option value="">Select Center</option>
+                            <option value="1">FPT Hà Nội</option>
+                            <option value="2">FPT Đà Nẵng</option>
+                            <option value="3">FPT Hồ Chí Minh</option>
+                            <option value="4">FPT Cần Thơ</option>
+                            <option value="5">FPT Quy Nhơn</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="startDate" class="form-label">Start Date</label>
+                        <input type="date" class="form-control" id="startDate">
+                    </div>
+                    <div class="mb-3">
+                        <label for="endDate" class="form-label">End Date</label>
+                        <input type="date" class="form-control" id="endDate">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveClassBtn">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="classDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Class Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Class ID</label>
+                        <p class="fw-bold" id="detailId">-</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Status</label>
+                        <p id="detailStatus">-</p>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label text-muted">Class Name</label>
+                        <p class="fw-bold fs-5" id="detailName">-</p>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label text-muted">Center</label>
+                        <p id="detailCenter">-</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Start Date</label>
+                        <p id="detailStartDate">-</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">End Date</label>
+                        <p id="detailEndDate">-</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Created At</label>
+                        <p id="detailCreatedAt">-</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Updated At</label>
+                        <p id="detailUpdatedAt">-</p>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="mb-3">Enrolled Students</h6>
+                        <div id="studentListContainer">
+                            <div class="text-center py-3">
+                                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2 text-muted mb-0">Loading students...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/config.js"></script>
+    <script src="~/js/auth.js"></script>
+    <script src="~/js/api-helper.js"></script>
+    <script>
+        const ClassManager = {
+            userRole: null,
+
+            init: function() {
+                Auth.checkAuth();
+                this.getUserRole();
+                this.loadClasses();
+                this.bindEvents();
+            },
+
+            getUserRole: function() {
+                const token = Auth.getToken();
+                if (token) {
+                    try {
+                        const payload = JSON.parse(atob(token.split('.')[1]));
+                        this.userRole = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || payload.role;
+                        this.updateUIBasedOnRole();
+                    } catch (e) {
+                        console.error('Failed to parse token:', e);
+                    }
+                }
+            },
+
+            updateUIBasedOnRole: function() {
+                if (this.userRole === 'Student') {
+                    $('#actionButtons').hide();
+                    $('#actionsHeader').hide();
+                    $('#pageSubtitle').text('View your enrolled classes');
+                    $('#pageTitle').text('My Enrolled Classes');
+                } else {
+                    $('#pageSubtitle').text('Manage all classes in the system');
+                    $('#pageTitle').text('Class Management');
+                }
+            },
+
+            bindEvents: function() {
+                $('#classForm').submit((e) => {
+                    e.preventDefault();
+                    const classId = $('#classId').val();
+                    if (classId) {
+                        this.updateClass(classId);
+                    } else {
+                        this.createClass();
+                    }
+                });
+            },
+
+            loadClasses: function() {
+                ApiHelper.request('/api/class', 'GET')
+                    .done((response) => {
+                        this.renderClasses(response.data);
+                    })
+                    .fail(() => {
+                        $('#classTableBody').html('<tr><td colspan="7" class="text-center text-danger">Failed to load classes</td></tr>');
+                    });
+            },
+
+            renderClasses: function(classes) {
+                const isStudent = this.userRole === 'Student';
+
+                if (classes.length === 0) {
+                    const message = isStudent ? 'You are not enrolled in any classes yet' : 'No classes found';
+                    $('#classTableBody').html(`<tr><td colspan="7" class="text-center py-5 text-muted">${message}</td></tr>`);
+                    return;
+                }
+
+                let html = '';
+                classes.forEach(cls => {
+                    const statusBadge = cls.isActive 
+                        ? '<span class="badge bg-success">Active</span>' 
+                        : '<span class="badge bg-secondary">Inactive</span>';
+                    
+                    const startDate = cls.startDate ? new Date(cls.startDate).toLocaleDateString('en-GB') : '-';
+                    const endDate = cls.endDate ? new Date(cls.endDate).toLocaleDateString('en-GB') : '-';
+
+                    let actionsHtml = '';
+                    if (isStudent) {
+                        actionsHtml = `<button class="btn btn-sm btn-info" onclick="ClassManager.showDetailModal(${cls.id})">View Details</button>`;
+                    } else {
+                        actionsHtml = `
+                            <button class="btn btn-sm btn-info me-1" onclick="ClassManager.showDetailModal(${cls.id})">View</button>
+                            <button class="btn btn-sm btn-warning me-1" onclick="ClassManager.showEditModal(${cls.id})">Edit</button>
+                            <button class="btn btn-sm ${cls.isActive ? 'btn-secondary' : 'btn-success'}" 
+                                    onclick="ClassManager.toggleStatus(${cls.id}, ${!cls.isActive})">
+                                ${cls.isActive ? 'Deactivate' : 'Activate'}
+                            </button>
+                        `;
+                    }
+
+                    html += `
+                        <tr>
+                            <td class="text-center"><strong>${cls.id}</strong></td>
+                            <td><strong>${cls.name}</strong></td>
+                            <td>${cls.centerName}</td>
+                            <td>${startDate}</td>
+                            <td>${endDate}</td>
+                            <td>${statusBadge}</td>
+                            <td>${actionsHtml}</td>
+                        </tr>
+                    `;
+                });
+                $('#classTableBody').html(html);
+            },
+
+            showCreateModal: function() {
+                $('#classModalTitle').text('Add New Class');
+                $('#classForm')[0].reset();
+                $('#classId').val('');
+            },
+
+            showDetailModal: function(classId) {
+                ApiHelper.request('/api/class', 'GET')
+                    .done((response) => {
+                        const cls = response.data.find(c => c.id === classId);
+                        if (cls) {
+                            $('#detailId').text(cls.id);
+                            $('#detailName').text(cls.name);
+                            $('#detailCenter').text(cls.centerName);
+                            $('#detailStartDate').text(cls.startDate ? new Date(cls.startDate).toLocaleDateString('en-GB') : '-');
+                            $('#detailEndDate').text(cls.endDate ? new Date(cls.endDate).toLocaleDateString('en-GB') : '-');
+                            $('#detailCreatedAt').text(new Date(cls.createdAt).toLocaleString('en-GB'));
+                            $('#detailUpdatedAt').text(new Date(cls.updatedAt).toLocaleString('en-GB'));
+                            
+                            const statusHtml = cls.isActive 
+                                ? '<span class="badge bg-success">Active</span>' 
+                                : '<span class="badge bg-secondary">Inactive</span>';
+                            $('#detailStatus').html(statusHtml);
+                            
+                            this.loadClassStudents(classId);
+                            
+                            $('#classDetailModal').modal('show');
+                        }
+                    });
+            },
+
+            loadClassStudents: function(classId) {
+                $('#studentListContainer').html(`
+                    <div class="text-center py-3">
+                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-muted mb-0">Loading students...</p>
+                    </div>
+                `);
+
+                ApiHelper.request(`/api/class/${classId}/students`, 'GET')
+                    .done((response) => {
+                        this.renderStudentList(response.data);
+                    })
+                    .fail(() => {
+                        $('#studentListContainer').html(`
+                            <div class="alert alert-danger">Failed to load students</div>
+                        `);
+                    });
+            },
+
+            renderStudentList: function(students) {
+                if (students.length === 0) {
+                    $('#studentListContainer').html(`
+                        <div class="alert alert-info">No students enrolled in this class yet</div>
+                    `);
+                    return;
+                }
+
+                let html = `
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm">
+                            <thead>
+                                <tr>
+                                    <th style="width: 60px;">ID</th>
+                                    <th>Username</th>
+                                    <th>Full Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th style="width: 100px;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                students.forEach(student => {
+                    const statusBadge = student.isActive 
+                        ? '<span class="badge bg-success">Active</span>' 
+                        : '<span class="badge bg-secondary">Inactive</span>';
+                    
+                    html += `
+                        <tr>
+                            <td class="text-center"><strong>${student.id}</strong></td>
+                            <td>${student.username}</td>
+                            <td>${student.fullName}</td>
+                            <td>${student.email}</td>
+                            <td>${student.phoneNumber || '-'}</td>
+                            <td>${statusBadge}</td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="text-muted mb-0 mt-2">Total: ${students.length} student(s)</p>
+                `;
+
+                $('#studentListContainer').html(html);
+            },
+
+            showEditModal: function(classId) {
+                ApiHelper.request('/api/class', 'GET')
+                    .done((response) => {
+                        const cls = response.data.find(c => c.id === classId);
+                        if (cls) {
+                            $('#classModalTitle').text('Edit Class');
+                            $('#classId').val(cls.id);
+                            $('#className').val(cls.name);
+                            $('#centerId').val(cls.centerId);
+                            $('#startDate').val(cls.startDate ? cls.startDate.split('T')[0] : '');
+                            $('#endDate').val(cls.endDate ? cls.endDate.split('T')[0] : '');
+                            $('#classModal').modal('show');
+                        }
+                    });
+            },
+
+            createClass: function() {
+                const data = {
+                    name: $('#className').val(),
+                    centerId: parseInt($('#centerId').val()),
+                    startDate: $('#startDate').val() || null,
+                    endDate: $('#endDate').val() || null
+                };
+
+                $('#saveClassBtn').prop('disabled', true).text('Saving...');
+
+                ApiHelper.request('/api/class', 'POST', data)
+                    .done((response) => {
+                        ApiHelper.showAlert(response.message, 'success');
+                        $('#classModal').modal('hide');
+                        this.loadClasses();
+                    })
+                    .fail((xhr) => {
+                        const message = xhr.responseJSON?.message || 'Failed to create class';
+                        ApiHelper.showAlert(message, 'danger');
+                    })
+                    .always(() => {
+                        $('#saveClassBtn').prop('disabled', false).text('Save');
+                    });
+            },
+
+            updateClass: function(classId) {
+                const data = {
+                    name: $('#className').val(),
+                    centerId: parseInt($('#centerId').val()),
+                    startDate: $('#startDate').val() || null,
+                    endDate: $('#endDate').val() || null
+                };
+
+                $('#saveClassBtn').prop('disabled', true).text('Updating...');
+
+                ApiHelper.request(`/api/class/${classId}`, 'PUT', data)
+                    .done((response) => {
+                        ApiHelper.showAlert(response.message, 'success');
+                        $('#classModal').modal('hide');
+                        this.loadClasses();
+                    })
+                    .fail((xhr) => {
+                        const message = xhr.responseJSON?.message || 'Failed to update class';
+                        ApiHelper.showAlert(message, 'danger');
+                    })
+                    .always(() => {
+                        $('#saveClassBtn').prop('disabled', false).text('Save');
+                    });
+            },
+
+            toggleStatus: function(classId, isActive) {
+                if (!confirm(`Are you sure you want to ${isActive ? 'activate' : 'deactivate'} this class?`)) {
+                    return;
+                }
+
+                const data = { id: classId, isActive: isActive };
+
+                ApiHelper.request('/api/class/active', 'PUT', data)
+                    .done((response) => {
+                        ApiHelper.showAlert(response.message, 'success');
+                        this.loadClasses();
+                    })
+                    .fail((xhr) => {
+                        const message = xhr.responseJSON?.message || 'Failed to update status';
+                        ApiHelper.showAlert(message, 'danger');
+                    });
+            }
+        };
+
+        $(document).ready(() => ClassManager.init());
+    </script>
+}
+

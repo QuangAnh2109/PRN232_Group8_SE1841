@@ -2,7 +2,7 @@
 {
     public class TokenDTO
     {
-        public string access_token = null!;
-        public string? refresh_token;
+        public string AccessToken { get; set; } = null!;
+        public string? RefreshToken { get; set; }
     }
 }

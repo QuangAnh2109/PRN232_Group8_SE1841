@@ -5,9 +5,9 @@ namespace Api.DTO
     public class LoginDTO
     {
         [Required]
-        public string username = null!;
+        public string Username { get; set; } = null!;
 
         [Required]
-        public string password = null!;
+        public string Password { get; set; } = null!;
     }
 }
