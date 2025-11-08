@@ -1,0 +1,70 @@
+@{
+    ViewData["Title"] = "Update Timesheet";
+    var timesheetId = ViewBag.TimesheetId ?? 0;
+}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Update Session</h2>
+            <p class="text-muted mb-0">Adjust timing, mode or notes for the existing session.</p>
+        </div>
+        <div class="col text-end">
+            <a class="btn btn-outline-secondary" href="/Class/Index">
+                Back to Classes
+            </a>
+        </div>
+    </div>
+
+    <div id="alertContainer"></div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form id="timesheetEditForm">
+                <input type="hidden" id="timesheetId" value="@timesheetId" />
+                <div class="mb-3">
+                    <label for="editClassId" class="form-label">Class</label>
+                    <select id="editClassId" class="form-select" required>
+                        <option value="">Select class</option>
+                    </select>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="editStartTime" class="form-label">Start time</label>
+                        <input type="datetime-local" id="editStartTime" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="editEndTime" class="form-label">End time</label>
+                        <input type="datetime-local" id="editEndTime" class="form-control" required>
+                    </div>
+                    <div class="col-md-8">
+                        <label for="editTitle" class="form-label">Title</label>
+                        <input type="text" id="editTitle" class="form-control" maxlength="100" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label d-block">Mode</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="editIsOnline">
+                            <label class="form-check-label" for="editIsOnline">Online session</label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label for="editDescription" class="form-label">Description (optional)</label>
+                        <textarea id="editDescription" class="form-control" rows="4" maxlength="500"></textarea>
+                    </div>
+                </div>
+                <div class="mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary" id="updateBtn">
+                        Save changes
+                    </button>
+                    <a href="/Class/Index" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/api-helper.js" asp-append-version="true"></script>
+    <script src="~/js/timesheet-edit.js" asp-append-version="true"></script>
+}
