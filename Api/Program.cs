@@ -56,6 +56,9 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IClassService, ClassService>();
 builder.Services.AddScoped<IStudentService, StudentService>();
+builder.Services.AddScoped<ITimesheetService, TimesheetService>();
+builder.Services.AddScoped<IAttendanceService, AttendanceService>();
+builder.Services.AddScoped<ITeacherDashboardService, TeacherDashboardService>();
 
 var app = builder.Build();
 
