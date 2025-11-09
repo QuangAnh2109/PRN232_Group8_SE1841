@@ -171,14 +171,14 @@
             userRole: null,
 
             init: function() {
-                Auth.checkAuth();
+                Auth.checkAccessToken();
                 this.getUserRole();
                 this.loadClasses();
                 this.bindEvents();
             },
 
             getUserRole: function() {
-                const token = Auth.getToken();
+                const token = Auth.getAccessToken();
                 if (token) {
                     try {
                         const payload = JSON.parse(atob(token.split('.')[1]));

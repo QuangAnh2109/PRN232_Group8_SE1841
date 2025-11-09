@@ -141,7 +141,7 @@
 
                 Auth.login(username, password)
                     .done(function(response) {
-                        Auth.saveToken(response.accessToken || response.AccessToken);
+                        Auth.saveJwtToken(response.accessToken, response.refreshToken);
                         window.location.href = '/Class/Index';
                     })
                     .fail(function(xhr) {

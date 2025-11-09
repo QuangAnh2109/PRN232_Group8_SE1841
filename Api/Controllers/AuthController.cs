@@ -21,7 +21,7 @@ namespace Api.Controllers
             _logger = logger;
             _accountService = accountService;
         }
-
+        
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterAccountDTO register)
         {

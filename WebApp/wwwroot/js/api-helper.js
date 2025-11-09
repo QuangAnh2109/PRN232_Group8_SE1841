@@ -1,18 +1,16 @@
 const ApiHelper = {
     request: function(url, method = 'GET', data = null) {
-        const token = Auth.getToken();
+        Auth.checkAccessToken();
+        const token = Auth.getAccessToken();
         const config = {
             url: `${API_BASE_URL}${url}`,
             method: method,
+            contentType: 'application/json',
+            data: JSON.stringify(data),
             headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
+                'Authorization': `Bearer ${token}`
             }
         };
-
-        if (data && (method === 'POST' || method === 'PUT')) {
-            config.data = JSON.stringify(data);
-        }
 
         return $.ajax(config).fail(function(xhr) {
             if (xhr.status === 401) {

@@ -75,7 +75,7 @@ namespace Api.Services.Implement
             //{
             //    throw new UnauthorizedAccessException("Invalid username or password");
             //}
-            var accessToken = GenerateJwtToken(user);
+            var accessToken = GenerateAccessToken(user);
 
             var refreshToken = new Token
             {
@@ -95,7 +95,7 @@ namespace Api.Services.Implement
             return new TokenDTO
             {
                 AccessToken = accessToken,
-                RefreshToken = refreshToken.Id.ToString()
+                RefreshToken = GenerateRefreshToken(refreshToken.Id)
             };
         }
 
@@ -111,10 +111,10 @@ namespace Api.Services.Implement
                 throw new UnauthorizedAccessException("Invalid user or token expired");
             }
 
-            return GenerateJwtToken(user);
+            return GenerateAccessToken(user);
         }
 
-        private string GenerateJwtToken(User user)
+        private string GenerateAccessToken(User user)
         {
             var claims = new[]
             {
@@ -122,19 +122,33 @@ namespace Api.Services.Implement
                 new Claim(ClaimTypes.Role, user.Role.Name),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Name, user.FullName),
-                new Claim(ClaimTypes.Version, user.LastModifiedTime.ToString("o"))
+                new Claim(ClaimTypes.Version, user.LastModifiedTime.ToString("o")),
             };
+            var expireMinutes = int.Parse(_configuration["Jwt:AccessTokenExpireMinutes"] ?? "60");
 
+            return GenerateJwtToken(claims, DateTime.UtcNow.AddMinutes(expireMinutes));
+        }
+        
+        private string GenerateRefreshToken(Guid RefreshTokenId)
+        {
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, RefreshTokenId.ToString())
+            };
+            var expireDays = int.Parse(_configuration["Jwt:RefreshTokenExpireDays"] ?? "7");
+            return GenerateJwtToken(claims, DateTime.UtcNow.AddDays(expireDays));
+        }
+        
+        private string GenerateJwtToken(IEnumerable<Claim> claims,DateTime expires)
+        {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var expireMinutes = int.Parse(_configuration["Jwt:ExpireMinutes"] ?? "60");
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(expireMinutes),
+                expires: expires,
                 signingCredentials: credentials
             );
 
