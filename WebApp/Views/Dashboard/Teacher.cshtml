@@ -1,0 +1,187 @@
+@{
+    ViewData["Title"] = "Teacher Dashboard";
+}
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Teacher Dashboard</h2>
+            <p class="text-muted mb-0">Overview of your classes, students, and upcoming sessions.</p>
+        </div>
+        <a class="btn btn-outline-secondary" href="/Class/Index">Back to Classes</a>
+    </div>
+
+    <div id="alertContainer"></div>
+
+    <div class="row g-3 mb-4" id="dashboardSummary">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card summary-card text-center">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Total Classes</p>
+                    <h3 id="totalClasses">0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card summary-card text-center">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Active Classes</p>
+                    <h3 id="activeClasses">0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card summary-card text-center">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Inactive Classes</p>
+                    <h3 id="inactiveClasses">0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card summary-card text-center">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Total Students</p>
+                    <h3 id="totalStudents">0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card summary-card text-center">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Sessions this week</p>
+                    <h3 id="sessionsThisWeek">0</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header d-flex flex-column flex-md-row gap-3 align-items-md-center justify-content-between">
+            <h5 class="mb-0">Class Overview</h5>
+            <div class="d-flex flex-wrap gap-2">
+                <input type="text" id="classSearch" class="form-control form-control-sm" placeholder="Search class or center">
+                <select id="classStatusFilter" class="form-select form-select-sm">
+                    <option value="all">All status</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+                <select id="classCenterFilter" class="form-select form-select-sm">
+                    <option value="all">All centers</option>
+                </select>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Class</th>
+                            <th>Center</th>
+                            <th class="text-center">Students</th>
+                            <th class="text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="classSummaryBody">
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">No classes assigned</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer d-flex flex-column flex-md-row gap-2 align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+                <small>Page size</small>
+                <select id="classPageSize" class="form-select form-select-sm" style="width: auto;">
+                    @for (var size = 5; size <= 100; size += 5)
+                    {
+                        if (size == 5)
+                        {
+                            <option value="@size" selected>@size</option>
+                        }
+                        else
+                        {
+                            <option value="@size">@size</option>
+                        }
+                    }
+                </select>
+            </div>
+            <small id="classPaginationInfo" class="text-muted">No data</small>
+            <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-secondary" id="classPrevBtn">Previous</button>
+                <button class="btn btn-outline-secondary" id="classNextBtn">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header d-flex flex-column flex-md-row gap-3 align-items-md-center justify-content-between">
+            <h5 class="mb-0">Sessions Overview</h5>
+            <div class="d-flex flex-wrap gap-2">
+                <select id="sessionClassFilter" class="form-select form-select-sm">
+                    <option value="all">All classes</option>
+                </select>
+                <select id="sessionRangeFilter" class="form-select form-select-sm">
+                    <option value="week">This week</option>
+                    <option value="7">Next 7 days</option>
+                    <option value="30">Next 30 days</option>
+                    <option value="all">All upcoming</option>
+                </select>
+                <select id="sessionModeFilter" class="form-select form-select-sm">
+                    <option value="all">All modes</option>
+                    <option value="online">Online</option>
+                    <option value="onsite">On-site</option>
+                </select>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Class</th>
+                            <th>Center</th>
+                            <th>Title</th>
+                            <th>Start Time</th>
+                            <th>Mode</th>
+                        </tr>
+                    </thead>
+                    <tbody id="upcomingSessionsBody">
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">No upcoming sessions</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer d-flex flex-column flex-md-row gap-2 align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+                <small>Page size</small>
+                <select id="sessionPageSize" class="form-select form-select-sm" style="width: auto;">
+                    @for (var size = 5; size <= 100; size += 5)
+                    {
+                        if (size == 5)
+                        {
+                            <option value="@size" selected>@size</option>
+                        }
+                        else
+                        {
+                            <option value="@size">@size</option>
+                        }
+                    }
+                </select>
+            </div>
+            <small id="sessionPaginationInfo" class="text-muted">No data</small>
+            <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-secondary" id="sessionPrevBtn">Previous</button>
+                <button class="btn btn-outline-secondary" id="sessionNextBtn">Next</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/api-helper.js" asp-append-version="true"></script>
+    <script src="~/js/dashboard-teacher.js" asp-append-version="true"></script>
+}

@@ -1,0 +1,72 @@
+@{
+    ViewData["Title"] = "Attendance Management";
+}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Attendance</h2>
+            <p class="text-muted mb-0">Select a class and session to create or update the attendance list.</p>
+        </div>
+        <div class="col text-end">
+            <a class="btn btn-outline-secondary" href="/Class/Index">Back to Classes</a>
+        </div>
+    </div>
+
+    <div id="alertContainer"></div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-3 align-items-end">
+                <div class="col-lg-4 col-md-6">
+                    <label class="form-label" for="attendanceClassSelect">Class</label>
+                    <select id="attendanceClassSelect" class="form-select">
+                        <option value="">Select class</option>
+                    </select>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <label class="form-label" for="attendanceTimesheetSelect">Session</label>
+                    <select id="attendanceTimesheetSelect" class="form-select" disabled>
+                        <option value="">Select session</option>
+                    </select>
+                </div>
+                <div class="col-lg-1 col-md-6 text-end">
+                    <button id="loadAttendanceBtn" class="btn btn-primary w-100" disabled>Load</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Attendance List</h5>
+            <button class="btn btn-success" id="saveAttendanceBtn" disabled>Save Attendance</button>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="attendanceTable">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Email</th>
+                            <th class="text-center" style="width: 120px;">Present</th>
+                            <th>Note</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">
+                                Select a class and session to load students.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/api-helper.js" asp-append-version="true"></script>
+    <script src="~/js/attendance-manage.js" asp-append-version="true"></script>
+}

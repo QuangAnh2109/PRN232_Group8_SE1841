@@ -4,6 +4,7 @@ using Api.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251108144348_AddTeacherToClass")]
+    partial class AddTeacherToClass
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -111,6 +114,7 @@ namespace Api.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("PhoneNumber")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("RecordNumber")
@@ -123,8 +127,6 @@ namespace Api.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ManagerId");
 
                     b.HasIndex("Name", "IsDeleted")
                         .IsUnique()
@@ -541,17 +543,6 @@ namespace Api.Migrations
                     b.Navigation("Timesheet");
                 });
 
-            modelBuilder.Entity("Api.Models.Center", b =>
-                {
-                    b.HasOne("Api.Models.User", "Manager")
-                        .WithMany()
-                        .HasForeignKey("ManagerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Manager");
-                });
-
             modelBuilder.Entity("Api.Models.Class", b =>
                 {
                     b.HasOne("Api.Models.Center", "Center")
@@ -602,7 +593,7 @@ namespace Api.Migrations
 
             modelBuilder.Entity("Api.Models.User", b =>
                 {
-                    b.HasOne("Api.Models.Center", "Center")
+                    b.HasOne("Api.Models.Center", null)
                         .WithMany("Users")
                         .HasForeignKey("CenterId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -613,8 +604,6 @@ namespace Api.Migrations
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Center");
 
                     b.Navigation("Role");
                 });
