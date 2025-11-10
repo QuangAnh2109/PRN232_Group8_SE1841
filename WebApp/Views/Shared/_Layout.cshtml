@@ -43,17 +43,27 @@
                         </li>
                         <li class="nav-item" style="display: none;" id="centerManagerNavItem">
                             <a class="nav-link text-white" asp-area="" asp-controller="Center" asp-action="Index">
-                                Classes
+                                Centers
                             </a>
                         </li>
                         <li class="nav-item" style="display: none;" id="userManagerNavItem">
                             <a class="nav-link text-white" asp-area="" asp-controller="User" asp-action="Index">
-                                Students
+                                Users
                             </a>
                         </li>
                         <li class="nav-item" style="display: none;" id="attendanceNavItem">
                             <a class="nav-link text-white" asp-area="" asp-controller="Attendance" asp-action="Manage">
                                 Attendance
+                            </a>
+                        </li>
+                        <li class="nav-item" style="display: none;" id="timesheetCreateNavItem">
+                            <a class="nav-link text-white" asp-area="" asp-controller="Timesheet" asp-action="Create">
+                                Timesheet Create
+                            </a>
+                        </li>
+                        <li class="nav-item" style="display: none;" id="timesheetEditNavItem">
+                            <a class="nav-link text-white" asp-area="" asp-controller="Timesheet" asp-action="Edit">
+                                Timesheet Edit
                             </a>
                         </li>
                     </ul>
@@ -101,6 +111,8 @@
                     $('#userManagerNavItem').show();
                     $('#attendanceNavItem').show();
                     $('#dashboardTeacherNavItem').show();
+                    $('#timesheetCreateNavItem').show();
+                    $('#timesheetEditNavItem').show();
                 }
             } else {
                 Auth.logout();

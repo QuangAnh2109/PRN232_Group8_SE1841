@@ -1,6 +1,6 @@
 const TimesheetCreate = {
     init: function() {
-        Auth.checkAuth();
+        Auth.checkAccessToken();
         this.bindEvents();
         this.loadClasses();
     },

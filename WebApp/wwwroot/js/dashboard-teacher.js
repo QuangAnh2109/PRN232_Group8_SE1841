@@ -9,7 +9,7 @@ const TeacherDashboard = {
     sessionPageSize: 5,
 
     init: function () {
-        Auth.checkAuth();
+        Auth.checkAccessToken();
         this.bindFilters();
         this.loadDashboard();
     },

@@ -48,7 +48,7 @@ const Auth = {
         if (!token) return true;
         try {
             const payload = JSON.parse(atob(token.split('.')[1]));
-            const nowUtcSeconds = Date.now / 1000;
+            const nowUtcSeconds = Date.now() / 1000;
             return payload.exp < nowUtcSeconds;
         } catch (e) {
             return true;
@@ -68,7 +68,7 @@ const Auth = {
     },
 
     checkAccessToken: function() {
-        if(!this.isTokenExpired(this.getAccessToken())) {
+        if(this.isTokenExpired(this.getAccessToken())) {
             return this.checkRefreshAccessToken();
         }
         return true;
@@ -87,9 +87,9 @@ const Auth = {
                 headers: {
                     'Authorization': `Bearer ${refreshToken}`,
                 }
-            }).done(function(response) {
+            }).done((response) => {
                 this.saveAccessToken(response.accessToken);
-            }).fail(function(xhr) {
+            }).fail((xhr) => {
                 this.logout();
             });
         } catch (e) {

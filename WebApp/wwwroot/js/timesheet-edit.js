@@ -2,7 +2,7 @@ const TimesheetEdit = {
     timesheetId: null,
 
     init: function() {
-        Auth.checkAuth();
+        Auth.checkAccessToken();
         this.timesheetId = parseInt($('#timesheetId').val(), 10);
 
         if (!this.timesheetId) {

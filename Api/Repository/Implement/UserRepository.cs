@@ -101,6 +101,7 @@ namespace Api.Repository.Implement
             try
             {
                 return await _context.Users
+                    .Include(u => u.Role)
                     .Where(u => id == u.Id && u.IsDeleted == false)
                     .FirstAsync();
             }
@@ -116,6 +117,7 @@ namespace Api.Repository.Implement
             try
             {
                 return await _context.Users
+                    .Include(u => u.Role)
                     .Where(u => username == u.Username && u.IsDeleted == false && u.IsActive == true)
                     .FirstAsync();
             }

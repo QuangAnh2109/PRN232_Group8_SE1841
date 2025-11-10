@@ -1,11 +1,11 @@
 @{
-    ViewData["Title"] = "Student Management";
+ViewData["Title"] = "Center Management";
 }
 
 <div class="container-fluid">
     <div class="row mb-3">
         <div class="col">
-            <h2>Student Management</h2>
+            <h2>Center Management</h2>
         </div>
     </div>
 
@@ -15,73 +15,39 @@
         <div class="card-body">
             <table class="table table-striped table-hover">
                 <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Username</th>
-                        <th>Full Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Center</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên Trung tâm</th>
+                    <th>Quản lý</th>
+                    <th>Địa chỉ</th>
+                    <th>Email</th>
+                    <th>Số điện thoại</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </tr>
                 </thead>
-                <tbody id="studentTableBody">
-                    <tr>
-                        <td colspan="8" class="text-center">
-                            <div class="spinner-border" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                        </td>
-                    </tr>
+                <tbody id="centerTableBody">
+                <tr>
+                    <td colspan="8" class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </td>
+                </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="studentModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Add New Student</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form id="studentForm">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="fullName" class="form-label">Full Name</label>
-                        <input type="text" class="form-control" id="fullName" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="phoneNumber" class="form-label">Phone Number</label>
-                        <input type="tel" class="form-control" id="phoneNumber">
-                    </div>
-                    <div class="alert alert-info">
-                        <small>Default password: Student@123</small>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="saveStudentBtn">Save</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="studentDetailsModal" tabindex="-1">
+<div class="modal fade" id="centerDetailsModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Student Details</h5>
+                <h5 class="modal-title">Center Details</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body" id="studentDetailsBody">
+            <div class="modal-body" id="centerDetailsBody">
                 <div class="text-center">
                     <div class="spinner-border" role="status">
                         <span class="visually-hidden">Loading...</span>
@@ -93,202 +59,171 @@
 </div>
 
 @section Scripts {
-    <script src="~/js/config.js"></script>
-    <script src="~/js/auth.js"></script>
-    <script src="~/js/api-helper.js"></script>
-    <script>
-        const StudentManager = {
-            init: function() {
-                Auth.checkAccessToken();
-                this.loadStudents();
-                this.bindEvents();
-            },
+<script src="~/js/api-helper.js"></script>
+<script>
+    const CenterManager = {
+        init: function() {
+            Auth.checkAccessToken();
+            this.loadCenters();
+        },
 
-            bindEvents: function() {
-                $('#studentForm').submit((e) => {
-                    e.preventDefault();
-                    this.createStudent();
+        loadCenters: function() {
+            const page = 1; // Tạm thời hardcode
+            const limit = 10; // Tạm thời hardcode
+
+            ApiHelper.request(`/api/center/centers?page=${page}&limit=${limit}`, 'GET')
+                .done((response) => {
+                    console.log(response);
+                    this.renderCenters(response.items);
+                })
+                .fail(() => {
+                    $('#centerTableBody').html('<tr><td colspan="8" class="text-center text-danger">Failed to load centers</td></tr>');
                 });
-            },
+        },
 
-            loadStudents: function() {
-                ApiHelper.request('/api/student', 'GET')
-                    .done((response) => {
-                        this.renderStudents(response.data);
-                    })
-                    .fail(() => {
-                        $('#studentTableBody').html('<tr><td colspan="8" class="text-center text-danger">Failed to load students</td></tr>');
-                    });
-            },
+        renderCenters: function(centers) {
+            if (!centers || centers.length === 0) {
+                $('#centerTableBody').html('<tr><td colspan="8" class="text-center">No centers found</td></tr>');
+                return;
+            }
 
-            renderStudents: function(students) {
-                if (students.length === 0) {
-                    $('#studentTableBody').html('<tr><td colspan="8" class="text-center">No students found</td></tr>');
-                    return;
-                }
+            let html = '';
+            centers.forEach(center => {
+                const isActive = center.status === 'Active';
+                const statusBadge = isActive
+                    ? '<span class="badge bg-success">Active</span>'
+                    : '<span class="badge bg-secondary">Inactive</span>';
 
-                let html = '';
-                students.forEach(student => {
-                    const statusBadge = student.isActive 
-                        ? '<span class="badge bg-success">Active</span>' 
-                        : '<span class="badge bg-secondary">Inactive</span>';
-
-                    html += `
+                html += `
                         <tr>
-                            <td>${student.id}</td>
-                            <td>${student.username}</td>
-                            <td>${student.fullName}</td>
-                            <td>${student.email}</td>
-                            <td>${student.phoneNumber || '-'}</td>
-                            <td>${student.centerName}</td>
+                            <td>${center.id}</td>
+                            <td>${center.name}</td>
+                            <td>${center.managerName || '-'}</td>
+                            <td>${center.address || '-'}</td>
+                            <td>${center.email}</td>
+                            <td>${center.phoneNumber || '-'}</td>
                             <td>${statusBadge}</td>
                             <td>
-                                <button class="btn btn-sm btn-info" onclick="StudentManager.showDetails(${student.id})">Details</button>
-                                <button class="btn btn-sm ${student.isActive ? 'btn-warning' : 'btn-success'}" 
-                                        onclick="StudentManager.toggleStatus(${student.id}, ${!student.isActive})">
-                                    ${student.isActive ? 'Deactivate' : 'Activate'}
+                                <button class="btn btn-sm btn-info" onclick="CenterManager.showDetails(${center.id})">Details</button>
+                                <button class="btn btn-sm ${isActive ? 'btn-warning' : 'btn-success'}" 
+                                        onclick="CenterManager.toggleStatus(${center.id}, ${!isActive})">
+                                    ${isActive ? 'Deactivate' : 'Activate'}
                                 </button>
-                                <button class="btn btn-sm btn-danger" onclick="StudentManager.deleteStudent(${student.id})">Delete</button>
                             </td>
                         </tr>
                     `;
-                });
-                $('#studentTableBody').html(html);
-            },
+            });
+            $('#centerTableBody').html(html);
+        },
 
-            showCreateModal: function() {
-                $('#studentForm')[0].reset();
-            },
-
-            createStudent: function() {
-                const data = {
-                    fullName: $('#fullName').val(),
-                    email: $('#email').val(),
-                    phoneNumber: $('#phoneNumber').val() || null
-                };
-
-                $('#saveStudentBtn').prop('disabled', true).text('Saving...');
-
-                ApiHelper.request('/api/student', 'POST', data)
-                    .done((response) => {
-                        ApiHelper.showAlert(response.message, 'success');
-                        $('#studentModal').modal('hide');
-                        this.loadStudents();
-                    })
-                    .fail((xhr) => {
-                        const message = xhr.responseJSON?.message || 'Failed to create student';
-                        ApiHelper.showAlert(message, 'danger');
-                    })
-                    .always(() => {
-                        $('#saveStudentBtn').prop('disabled', false).text('Save');
-                    });
-            },
-
-            showDetails: function(studentId) {
-                $('#studentDetailsBody').html(`
+        showDetails: function(centerId) {
+            $('#centerDetailsBody').html(`
                     <div class="text-center">
                         <div class="spinner-border" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
                     </div>
                 `);
-                $('#studentDetailsModal').modal('show');
+            $('#centerDetailsModal').modal('show');
 
-                ApiHelper.request(`/api/student/${studentId}/details`, 'GET')
-                    .done((response) => {
-                        this.renderDetails(response.data);
-                    })
-                    .fail(() => {
-                        $('#studentDetailsBody').html('<div class="alert alert-danger">Failed to load student details</div>');
-                    });
-            },
+            ApiHelper.request(`/api/center/centers/${centerId}/details`, 'GET')
+                .done((response) => {
+                    this.renderDetails(response.center, response.users, response.classes);
+                })
+                .fail(() => {
+                    $('#centerDetailsBody').html('<div class="alert alert-danger">Failed to load center details</div>');
+                });
+        },
 
-            renderDetails: function(student) {
-                let classesHtml = '';
-                if (student.classes && student.classes.length > 0) {
-                    classesHtml = '<ul class="list-group">';
-                    student.classes.forEach(cls => {
-                        const statusBadge = cls.isActive ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>';
-                        classesHtml += `
-                            <li class="list-group-item">
-                                <strong>${cls.className}</strong> ${statusBadge}
-                                <br>
-                                <small>Joined: ${new Date(cls.joinedAt).toLocaleDateString()}</small>
-                                ${cls.startDate ? `<br><small>Start: ${new Date(cls.startDate).toLocaleDateString()}</small>` : ''}
-                                ${cls.endDate ? `<br><small>End: ${new Date(cls.endDate).toLocaleDateString()}</small>` : ''}
+        renderDetails: function(center, users, classes) {
+            const centerIsActive = center.status === 'Active';
+            const centerStatusBadge = centerIsActive ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>';
+
+            const centerHtml = `
+                    <h6>Center Information</h6>
+                    <table class="table table-sm table-bordered">
+                        <tr><th>ID:</th><td>${center.id}</td></tr>
+                        <tr><th>Name:</th><td>${center.name}</td></tr>
+                        <tr><th>Manager:</th><td>${center.managerName || '-'}</td></tr>
+                        <tr><th>Address:</th><td>${center.address || '-'}</td></tr>
+                        <tr><th>Email:</th><td>${center.email}</td></tr>
+                        <tr><th>Phone:</th><td>${center.phoneNumber || '-'}</td></tr>
+                        <tr><th>Status:</th><td>${centerStatusBadge}</td></tr>
+                        <tr><th>Created:</th><td>${new Date(center.createdAt).toLocaleDateString()}</td></tr>
+                    </table>
+                `;
+
+            let usersHtml = '<h6>Users in Center</h6>';
+            if (users && users.length > 0) {
+                usersHtml += '<ul class="list-group mb-3">';
+                users.forEach(user => {
+                    const userStatus = user.status === 'Active' ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>';
+                    usersHtml += `
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div>
+                                    <strong>${user.fullName}</strong> (${user.roleName})
+                                    <br><small class="text-muted">${user.email} | ${user.username}</small>
+                                </div>
+                                ${userStatus}
                             </li>
                         `;
-                    });
-                    classesHtml += '</ul>';
-                } else {
-                    classesHtml = '<p class="text-muted">Not enrolled in any classes</p>';
-                }
-
-                const html = `
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h6>Personal Information</h6>
-                            <table class="table table-sm">
-                                <tr><th>ID:</th><td>${student.id}</td></tr>
-                                <tr><th>Username:</th><td>${student.username}</td></tr>
-                                <tr><th>Full Name:</th><td>${student.fullName}</td></tr>
-                                <tr><th>Email:</th><td>${student.email}</td></tr>
-                                <tr><th>Phone:</th><td>${student.phoneNumber || '-'}</td></tr>
-                                <tr><th>Status:</th><td>${student.isActive ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>'}</td></tr>
-                            </table>
-                        </div>
-                        <div class="col-md-6">
-                            <h6>Center Information</h6>
-                            <table class="table table-sm">
-                                <tr><th>Center:</th><td>${student.centerName}</td></tr>
-                                <tr><th>Address:</th><td>${student.centerAddress}</td></tr>
-                                <tr><th>Email:</th><td>${student.centerEmail}</td></tr>
-                            </table>
-                        </div>
-                    </div>
-                    <hr>
-                    <h6>Enrolled Classes</h6>
-                    ${classesHtml}
-                `;
-                $('#studentDetailsBody').html(html);
-            },
-
-            toggleStatus: function(studentId, isActive) {
-                if (!confirm(`Are you sure you want to ${isActive ? 'activate' : 'deactivate'} this student?`)) {
-                    return;
-                }
-
-                const data = { id: studentId, isActive: isActive };
-
-                ApiHelper.request('/api/student/active', 'PUT', data)
-                    .done((response) => {
-                        ApiHelper.showAlert(response.message, 'success');
-                        this.loadStudents();
-                    })
-                    .fail((xhr) => {
-                        const message = xhr.responseJSON?.message || 'Failed to update status';
-                        ApiHelper.showAlert(message, 'danger');
-                    });
-            },
-
-            deleteStudent: function(studentId) {
-                if (!confirm('Are you sure you want to delete this student? This action cannot be undone.')) {
-                    return;
-                }
-
-                ApiHelper.request(`/api/student/${studentId}`, 'DELETE')
-                    .done((response) => {
-                        ApiHelper.showAlert(response.message, 'success');
-                        this.loadStudents();
-                    })
-                    .fail((xhr) => {
-                        const message = xhr.responseJSON?.message || 'Failed to delete student';
-                        ApiHelper.showAlert(message, 'danger');
-                    });
+                });
+                usersHtml += '</ul>';
+            } else {
+                usersHtml += '<p class="text-muted">No users found in this center</p>';
             }
-        };
 
-        $(document).ready(() => StudentManager.init());
-    </script>
+            let classesHtml = '<h6>Classes in Center</h6>';
+            if (classes && classes.length > 0) {
+                classesHtml += '<ul class="list-group">';
+                classes.forEach(cls => {
+                    const classStatus = cls.status === 'Active' ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>';
+                    const startDate = cls.startDate ? new Date(cls.startDate).toLocaleDateString() : 'N/A';
+                    const endDate = cls.endDate ? new Date(cls.endDate).toLocaleDateString() : 'N/A';
+
+                    classesHtml += `
+                            <li class="list-group-item d-flex justify-content-between align-items-start">
+                                <div>
+                                    <strong>${cls.name}</strong>
+                                    <br><small class="text-muted">Time: ${startDate} - ${endDate}</small>
+                                </div>
+                                ${classStatus}
+                            </li>
+                        `;
+                });
+                classesHtml += '</ul>';
+            } else {
+                classesHtml += '<p class="text-muted">No classes found in this center</p>';
+            }
+
+            $('#centerDetailsBody').html(`
+                    ${centerHtml}
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6">${usersHtml}</div>
+                        <div class="col-md-6">${classesHtml}</div>
+                    </div>
+                `);
+        },
+
+        toggleStatus: function(centerId, isActive) {
+            const actionText = isActive ? 'activate' : 'deactivate';
+            if (!confirm(`Are you sure you want to ${actionText} this center?`)) {
+                return;
+            }
+
+            ApiHelper.request(`/api/center/centers/${centerId}/active/${isActive}`, 'PUT')
+                .done((response) => {
+                    ApiHelper.showAlert('Status updated successfully', 'success');
+                    this.loadCenters();
+                })
+                .fail((xhr) => {
+                    const message = xhr.responseJSON?.message || 'Failed to update status';
+                    ApiHelper.showAlert(message, 'danger');
+                });
+        }
+    };
+
+    $(document).ready(() => CenterManager.init());
+</script>
 }
-
