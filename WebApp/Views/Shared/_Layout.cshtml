@@ -31,6 +31,16 @@
                                 Students
                             </a>
                         </li>
+                        <li class="nav-item" id="attendanceNavItem">
+                            <a class="nav-link text-white" asp-area="" asp-controller="Attendance" asp-action="Manage">
+                                Attendance
+                            </a>
+                        </li>
+                        <li class="nav-item" id="dashboardNavItem">
+                            <a class="nav-link text-white" asp-area="" asp-controller="Dashboard" asp-action="Teacher">
+                                Dashboard
+                            </a>
+                        </li>
                     </ul>
                     <ul class="navbar-nav">
                         <li class="nav-item">
@@ -68,6 +78,8 @@
                     const userRole = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || payload.role;
                     if (userRole === 'Student') {
                         $('#studentNavItem').hide();
+                        $('#attendanceNavItem').hide();
+                        $('#dashboardNavItem').hide();
                     }
                 } catch (e) {
                     console.error('Failed to parse token:', e);

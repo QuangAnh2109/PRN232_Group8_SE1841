@@ -17,7 +17,12 @@ namespace Api.Models
 
         public DateTime? EndDate { get; set; }
 
+        [ForeignKey(nameof(Api.Models.User))]
+        public int? TeacherId { get; set; }
+
         public Center Center { get; set; } = null!;
+
+        public User? Teacher { get; set; }
 
         public ICollection<Timesheet>? Timesheets { get; set; }
     }

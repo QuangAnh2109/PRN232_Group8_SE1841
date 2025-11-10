@@ -1,3 +1,4 @@
+using Api.Constants;
 using Api.DTO;
 using Api.Models;
 using Api.Services.Interface;
@@ -19,6 +20,7 @@ namespace Api.Services.Implement
             return await _context.Classes
                 .Where(c => c.IsDeleted == false)
                 .Include(c => c.Center)
+                .Include(c => c.Teacher)
                 .Select(c => new ClassResponseDTO
                 {
                     Id = c.Id,
@@ -29,7 +31,9 @@ namespace Api.Services.Implement
                     EndDate = c.EndDate,
                     IsActive = c.IsActive,
                     CreatedAt = c.CreatedAt,
-                    UpdatedAt = c.UpdatedAt
+                    UpdatedAt = c.UpdatedAt,
+                    TeacherId = c.TeacherId,
+                    TeacherName = c.Teacher != null ? c.Teacher.FullName : null
                 })
                 .ToListAsync();
         }
@@ -40,6 +44,7 @@ namespace Api.Services.Implement
                 .Where(cs => cs.StudentId == studentId && cs.IsDeleted == false)
                 .Include(cs => cs.Class)
                 .ThenInclude(c => c.Center)
+                .Include(cs => cs.Class.Teacher)
                 .Where(cs => cs.Class.IsDeleted == false)
                 .Select(cs => new ClassResponseDTO
                 {
@@ -51,7 +56,9 @@ namespace Api.Services.Implement
                     EndDate = cs.Class.EndDate,
                     IsActive = cs.Class.IsActive,
                     CreatedAt = cs.Class.CreatedAt,
-                    UpdatedAt = cs.Class.UpdatedAt
+                    UpdatedAt = cs.Class.UpdatedAt,
+                    TeacherId = cs.Class.TeacherId,
+                    TeacherName = cs.Class.Teacher != null ? cs.Class.Teacher.FullName : null
                 })
                 .ToListAsync();
         }
@@ -61,6 +68,7 @@ namespace Api.Services.Implement
             var classEntity = await _context.Classes
                 .Where(c => c.Id == id && c.IsDeleted == false)
                 .Include(c => c.Center)
+                .Include(c => c.Teacher)
                 .FirstOrDefaultAsync();
 
             if (classEntity == null)
@@ -76,7 +84,9 @@ namespace Api.Services.Implement
                 EndDate = classEntity.EndDate,
                 IsActive = classEntity.IsActive,
                 CreatedAt = classEntity.CreatedAt,
-                UpdatedAt = classEntity.UpdatedAt
+                UpdatedAt = classEntity.UpdatedAt,
+                TeacherId = classEntity.TeacherId,
+                TeacherName = classEntity.Teacher?.FullName
             };
         }
 
@@ -115,12 +125,15 @@ namespace Api.Services.Implement
             if (classExists)
                 throw new InvalidOperationException($"Class '{createClassDTO.Name}' already exists in this center");
 
+            var teacherId = await ResolveTeacherIdAsync(createClassDTO.TeacherId, createdBy);
+
             var newClass = new Class
             {
                 Name = createClassDTO.Name,
                 CenterId = createClassDTO.CenterId,
                 StartDate = createClassDTO.StartDate,
                 EndDate = createClassDTO.EndDate,
+                TeacherId = teacherId,
                 IsActive = true,
                 IsDeleted = false,
                 CreatedAt = DateTime.UtcNow,
@@ -134,6 +147,10 @@ namespace Api.Services.Implement
             await _context.SaveChangesAsync();
 
             await _context.Entry(newClass).Reference(c => c.Center).LoadAsync();
+            if (newClass.TeacherId.HasValue)
+            {
+                await _context.Entry(newClass).Reference(c => c.Teacher).LoadAsync();
+            }
 
             return new ClassResponseDTO
             {
@@ -145,7 +162,9 @@ namespace Api.Services.Implement
                 EndDate = newClass.EndDate,
                 IsActive = newClass.IsActive,
                 CreatedAt = newClass.CreatedAt,
-                UpdatedAt = newClass.UpdatedAt
+                UpdatedAt = newClass.UpdatedAt,
+                TeacherId = newClass.TeacherId,
+                TeacherName = newClass.Teacher?.FullName
             };
         }
 
@@ -177,15 +196,20 @@ namespace Api.Services.Implement
             existingClass.CenterId = updateClassDTO.CenterId;
             existingClass.StartDate = updateClassDTO.StartDate;
             existingClass.EndDate = updateClassDTO.EndDate;
+            if (updateClassDTO.TeacherId.HasValue)
+            {
+                existingClass.TeacherId = await ValidateTeacherAsync(updateClassDTO.TeacherId.Value);
+            }
             existingClass.UpdatedAt = DateTime.UtcNow;
             existingClass.UpdatedBy = updatedBy;
             existingClass.RecordNumber++;
 
             await _context.SaveChangesAsync();
 
-            if (existingClass.CenterId != updateClassDTO.CenterId)
+            await _context.Entry(existingClass).Reference(c => c.Center).LoadAsync();
+            if (existingClass.TeacherId.HasValue)
             {
-                await _context.Entry(existingClass).Reference(c => c.Center).LoadAsync();
+                await _context.Entry(existingClass).Reference(c => c.Teacher).LoadAsync();
             }
 
             return new ClassResponseDTO
@@ -198,7 +222,9 @@ namespace Api.Services.Implement
                 EndDate = existingClass.EndDate,
                 IsActive = existingClass.IsActive,
                 CreatedAt = existingClass.CreatedAt,
-                UpdatedAt = existingClass.UpdatedAt
+                UpdatedAt = existingClass.UpdatedAt,
+                TeacherId = existingClass.TeacherId,
+                TeacherName = existingClass.Teacher?.FullName
             };
         }
 
@@ -216,6 +242,44 @@ namespace Api.Services.Implement
             existingClass.RecordNumber++;
 
             await _context.SaveChangesAsync();
+        }
+
+        private async Task<int?> ResolveTeacherIdAsync(int? teacherId, int createdBy)
+        {
+            if (teacherId.HasValue)
+            {
+                return await ValidateTeacherAsync(teacherId.Value);
+            }
+
+            var creator = await _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.Id == createdBy && u.IsDeleted == false);
+
+            if (creator != null && string.Equals(creator.Role?.Name, DefaultValues.TeacherRole, StringComparison.OrdinalIgnoreCase))
+            {
+                return creator.Id;
+            }
+
+            return null;
+        }
+
+        private async Task<int> ValidateTeacherAsync(int teacherId)
+        {
+            var teacher = await _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.Id == teacherId && u.IsDeleted == false);
+
+            if (teacher == null)
+            {
+                throw new ArgumentException($"User with ID {teacherId} not found");
+            }
+
+            if (!string.Equals(teacher.Role?.Name, DefaultValues.TeacherRole, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new ArgumentException($"User with ID {teacherId} is not a teacher");
+            }
+
+            return teacher.Id;
         }
     }
 }
