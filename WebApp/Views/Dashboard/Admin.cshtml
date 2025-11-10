@@ -1,0 +1,84 @@
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Admin Dashboard</h2>
+        </div>
+    </div>
+
+    <div id="alertContainer"></div>
+
+    <div class="row g-3 mb-4" id="dashboardSummary">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card summary-card text-center">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Total Users</p>
+                    <h3 id="totalUsers">0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card summary-card text-center">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Total Teachers</p>
+                    <h3 id="totalTeachers">0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card summary-card text-center">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Total Students</p>
+                    <h3 id="totalStudents">0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card summary-card text-center">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Total Centers</p>
+                    <h3 id="totalCenters">0/0</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card summary-card text-center">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Total Classes</p>
+                    <h3 id="totalClasses">0/0</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script src="~/js/api-helper.js" asp-append-version="true"></script>
+<script>
+    const DashboardAdminManager = {
+        init: function() {
+            Auth.checkAccessToken();
+            this.loadDashboardSummary();
+        },
+
+        loadDashboardSummary: function() {
+            ApiHelper.request("/api/dashboard/admin", "GET", null, true)
+                .done(respone => {
+                    console.log(respone);
+                    $("#totalUsers").html(respone.totalUsers);
+                    $("#totalTeachers").html(respone.totalTeachers);
+                    $("#totalStudents").html(respone.totalStudents);
+                    $("#totalCenters").html(`${respone.activeCenters}/${respone.totalCenters}`);
+                    $("#totalClasses").html(`${respone.activeClasses}/${respone.totalClasses}`);
+                })
+                .catch(error => {
+                    ApiHelper.showAlert("Error loading dashboard summary", "danger");
+                });
+        }
+    };
+    $(document).ready(() => DashboardAdminManager.init());
+</script>
+}

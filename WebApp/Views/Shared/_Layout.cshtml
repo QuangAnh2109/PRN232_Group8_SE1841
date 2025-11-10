@@ -27,7 +27,7 @@
                             </a>
                         </li>
                         <li class="nav-item" style="display: none;" id="dashboardAdminNavItem">
-                            <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">
+                            <a class="nav-link text-white" asp-area="" asp-controller="Dashboard" asp-action="Admin">
                                 Dashboard
                             </a>
                         </li>
@@ -105,11 +105,12 @@
                 else if(userRole === 'Admin') {
                     $('#userManagerNavItem').show();
                     $('#centerManagerNavItem').show();
+                    $('#dashboardAdminNavItem').show();
                 }
                 else if(userRole === 'Teacher') {
                     $('#classManagerNavItem').show();
-                    $('#userManagerNavItem').show();
                     $('#attendanceNavItem').show();
+                    $('#studentManagerNavItem').show();
                     $('#dashboardTeacherNavItem').show();
                     $('#timesheetCreateNavItem').show();
                     $('#timesheetEditNavItem').show();

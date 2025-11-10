@@ -173,4 +173,11 @@ public class CenterRepository : ICenterRepository
             .Where(c => c.Id == id && c.IsDeleted == false)
             .FirstAsync();
     }
+    
+    public async Task<IEnumerable<Center>> GetAllCentersAsync()
+    {
+        return await _context.Centers
+            .Where(c => c.IsDeleted == false)
+            .ToListAsync();
+    }
 }

@@ -2,6 +2,7 @@ using Api.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Api.Constants;
 
 namespace Api.Controllers
 {
@@ -11,12 +12,15 @@ namespace Api.Controllers
     public class DashboardController : ControllerBase
     {
         private readonly ITeacherDashboardService _teacherDashboardService;
+        private readonly IDashboardService _dashboardService;
 
-        public DashboardController(ITeacherDashboardService teacherDashboardService)
+        public DashboardController(ITeacherDashboardService teacherDashboardService, IDashboardService dashboardService)
         {
             _teacherDashboardService = teacherDashboardService;
+            _dashboardService = dashboardService;
         }
 
+        [Authorize(Roles = DefaultValues.TeacherRole)]
         [HttpGet("teacher")]
         public async Task<IActionResult> GetTeacherDashboard()
         {
@@ -42,6 +46,13 @@ namespace Api.Controllers
                     error = ex.Message
                 });
             }
+        }
+        
+        [Authorize(Roles = DefaultValues.AdminRole)]
+        [HttpGet("admin")]
+        public async Task<IActionResult> GetAdminDashboard()
+        {
+            return Ok(await _dashboardService.GetAdminDashboardAsync());
         }
     }
 }

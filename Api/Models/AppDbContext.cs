@@ -65,7 +65,6 @@ namespace Api.Models
                 foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
             }
 
-            // Seed initial data for Role
             modelBuilder.Entity<Role>().HasData(
                 new Role
                 {

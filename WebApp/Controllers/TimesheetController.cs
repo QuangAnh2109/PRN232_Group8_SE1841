@@ -4,6 +4,11 @@ namespace WebApp.Controllers
 {
     public class TimesheetController : Controller
     {
+        public IActionResult Index()
+        {
+            return View();
+        }
+        
         public IActionResult Create()
         {
             return View();

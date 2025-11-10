@@ -1,5 +1,6 @@
 ﻿using Api.Constants;
 using Api.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,12 +19,14 @@ namespace Api.Controllers
             _centerService = centerService;
         }
 
+        [Authorize(Roles = DefaultValues.AdminRole)]
         [HttpGet("centers")]
         public async Task<IActionResult> GetAllCenters([FromQuery] int page = DefaultValues.DefaultPage, [FromQuery] int limit = DefaultValues.DefaultLimit)
         {
             return Ok(await _centerService.GetAllCentersWithPaginationAsync(page, limit));
         }
 
+        [Authorize(Roles = DefaultValues.AdminRole)]
         [HttpPut("centers/{id:int}/active/{isActive:bool}")]
         public async Task<IActionResult> ChangeCenterActivity(int id, bool isActive)
         {
@@ -31,6 +34,7 @@ namespace Api.Controllers
             return Ok();
         }
 
+        [Authorize(Roles = DefaultValues.AdminRole)]
         [HttpGet("centers/{id:int}/details")]
         public async Task<IActionResult> GetCenterDetailsById(int id)
         {

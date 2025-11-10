@@ -11,5 +11,6 @@ namespace Api.Repository.Interface
         Task<User> GetUsersLoginAsync(string username);
         Task<UserDetailAdminDto> GetUserDetailsByIdAsync(int id);
         Task AddUserAsync(User user);
+        Task<IEnumerable<User>> GetAllUsersAsync();
     }
 }

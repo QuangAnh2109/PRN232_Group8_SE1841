@@ -1,6 +1,7 @@
 ﻿using Api.Constants;
 using Api.DTO;
 using Api.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,12 +21,14 @@ namespace Api.Controllers
             _userService = userService;
         }
 
+        [Authorize(Roles = DefaultValues.AdminRole)]
         [HttpGet("users")]
         public async Task<IActionResult> GetAllUser([FromQuery] int page = DefaultValues.DefaultPage,[FromQuery] int limit = DefaultValues.DefaultLimit)
         {
             return Ok(await _userService.GetAllUsersWithPaginationAsync(page, limit));
         }
 
+        [Authorize(Roles = DefaultValues.AdminRole)]
         [HttpPut("users/{id:int}/active/{isActive:bool}")]
         public async Task<IActionResult> ChangeUserActivity(int id, bool isActive)
         {
@@ -33,6 +36,7 @@ namespace Api.Controllers
             return Ok();
         }
 
+        [Authorize(Roles = DefaultValues.AdminRole)]
         [HttpGet("users/{id:int}/details")]
         public async Task<IActionResult> GetUserDetails(int id)
         {
