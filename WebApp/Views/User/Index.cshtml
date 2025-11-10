@@ -15,73 +15,40 @@
         <div class="card-body">
             <table class="table table-striped table-hover">
                 <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Username</th>
-                        <th>Full Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Center</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Tên đầy đủ</th>
+                    <th>Email</th>
+                    <th>Số điện thoại</th>
+                    <th>Trung tâm</th>
+                    <th>Vai trò</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </tr>
                 </thead>
-                <tbody id="studentTableBody">
-                    <tr>
-                        <td colspan="8" class="text-center">
-                            <div class="spinner-border" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                        </td>
-                    </tr>
+                <tbody id="userTableBody">
+                <tr>
+                    <td colspan="9" class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </td>
+                </tr>
                 </tbody>
             </table>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="studentModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Add New Student</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form id="studentForm">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="fullName" class="form-label">Full Name</label>
-                        <input type="text" class="form-control" id="fullName" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="phoneNumber" class="form-label">Phone Number</label>
-                        <input type="tel" class="form-control" id="phoneNumber">
-                    </div>
-                    <div class="alert alert-info">
-                        <small>Default password: Student@123</small>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="saveStudentBtn">Save</button>
-                </div>
-            </form>
-        </div>
     </div>
 </div>
 
-<div class="modal fade" id="studentDetailsModal" tabindex="-1">
+<div class="modal fade" id="userDetailsModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Student Details</h5>
+                <h5 class="modal-title">User Details</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body" id="studentDetailsBody">
+            <div class="modal-body" id="userDetailsBody">
                 <div class="text-center">
                     <div class="spinner-border" role="status">
                         <span class="visually-hidden">Loading...</span>
@@ -93,200 +60,164 @@
 </div>
 
 @section Scripts {
-    <script src="~/js/api-helper.js"></script>
-    <script>
-        const StudentManager = {
-            init: function() {
-                Auth.checkAccessToken();
-                this.loadStudents();
-                this.bindEvents();
-            },
+<script src="~/js/api-helper.js"></script>
+<script>
+    const UserManager = {
+        init: function() {
+            Auth.checkAccessToken();
+            this.loadUsers();
+        },
 
-            bindEvents: function() {
-                $('#studentForm').submit((e) => {
-                    e.preventDefault();
-                    this.createStudent();
+        loadUsers: function() {
+            const page = 1;
+            const limit = 10;
+
+            ApiHelper.request(`/api/user/users?page=${page}&limit=${limit}`, 'GET')
+                .done((response) => {
+                    this.renderUsers(response.items);
+                })
+                .fail(() => {
+                    $('#userTableBody').html('<tr><td colspan="9" class="text-center text-danger">Failed to load users</td></tr>');
                 });
-            },
+        },
 
-            loadStudents: function() {
-                ApiHelper.request('/api/student', 'GET')
-                    .done((response) => {
-                        this.renderStudents(response.data);
-                    })
-                    .fail(() => {
-                        $('#studentTableBody').html('<tr><td colspan="8" class="text-center text-danger">Failed to load students</td></tr>');
-                    });
-            },
+        renderUsers: function(users) {
+            if (!users || users.length === 0) {
+                $('#userTableBody').html('<tr><td colspan="9" class="text-center">No users found</td></tr>');
+                return;
+            }
 
-            renderStudents: function(students) {
-                if (students.length === 0) {
-                    $('#studentTableBody').html('<tr><td colspan="8" class="text-center">No students found</td></tr>');
-                    return;
-                }
+            let html = '';
+            users.forEach(user => {
+                const isActive = user.status === 'Active';
+                const statusBadge = isActive
+                    ? '<span class="badge bg-success">Active</span>'
+                    : '<span class="badge bg-secondary">Inactive</span>';
 
-                let html = '';
-                students.forEach(student => {
-                    const statusBadge = student.isActive 
-                        ? '<span class="badge bg-success">Active</span>' 
-                        : '<span class="badge bg-secondary">Inactive</span>';
-
-                    html += `
+                html += `
                         <tr>
-                            <td>${student.id}</td>
-                            <td>${student.username}</td>
-                            <td>${student.fullName}</td>
-                            <td>${student.email}</td>
-                            <td>${student.phoneNumber || '-'}</td>
-                            <td>${student.centerName}</td>
+                            <td>${user.id}</td>
+                            <td>${user.username}</td>
+                            <td>${user.fullName}</td>
+                            <td>${user.email}</td>
+                            <td>${user.phoneNumber || '-'}</td>
+                            <td>${user.centerName || '-'}</td>
+                            <td>${user.roleName}</td>
                             <td>${statusBadge}</td>
                             <td>
-                                <button class="btn btn-sm btn-info" onclick="StudentManager.showDetails(${student.id})">Details</button>
-                                <button class="btn btn-sm ${student.isActive ? 'btn-warning' : 'btn-success'}" 
-                                        onclick="StudentManager.toggleStatus(${student.id}, ${!student.isActive})">
-                                    ${student.isActive ? 'Deactivate' : 'Activate'}
+                                <button class="btn btn-sm btn-info" onclick="UserManager.showDetails(${user.id})">Details</button>
+                                <button class="btn btn-sm ${isActive ? 'btn-warning' : 'btn-success'}" 
+                                        onclick="UserManager.toggleStatus(${user.id}, ${!isActive})">
+                                    ${isActive ? 'Deactivate' : 'Activate'}
                                 </button>
-                                <button class="btn btn-sm btn-danger" onclick="StudentManager.deleteStudent(${student.id})">Delete</button>
                             </td>
                         </tr>
                     `;
-                });
-                $('#studentTableBody').html(html);
-            },
+            });
+            $('#userTableBody').html(html);
+        },
 
-            showCreateModal: function() {
-                $('#studentForm')[0].reset();
-            },
-
-            createStudent: function() {
-                const data = {
-                    fullName: $('#fullName').val(),
-                    email: $('#email').val(),
-                    phoneNumber: $('#phoneNumber').val() || null
-                };
-
-                $('#saveStudentBtn').prop('disabled', true).text('Saving...');
-
-                ApiHelper.request('/api/student', 'POST', data)
-                    .done((response) => {
-                        ApiHelper.showAlert(response.message, 'success');
-                        $('#studentModal').modal('hide');
-                        this.loadStudents();
-                    })
-                    .fail((xhr) => {
-                        const message = xhr.responseJSON?.message || 'Failed to create student';
-                        ApiHelper.showAlert(message, 'danger');
-                    })
-                    .always(() => {
-                        $('#saveStudentBtn').prop('disabled', false).text('Save');
-                    });
-            },
-
-            showDetails: function(studentId) {
-                $('#studentDetailsBody').html(`
+        showDetails: function(userId) {
+            $('#userDetailsBody').html(`
                     <div class="text-center">
                         <div class="spinner-border" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
                     </div>
                 `);
-                $('#studentDetailsModal').modal('show');
+            $('#userDetailsModal').modal('show');
 
-                ApiHelper.request(`/api/student/${studentId}/details`, 'GET')
-                    .done((response) => {
-                        this.renderDetails(response.data);
-                    })
-                    .fail(() => {
-                        $('#studentDetailsBody').html('<div class="alert alert-danger">Failed to load student details</div>');
-                    });
-            },
+            ApiHelper.request(`/api/user/users/${userId}/details`, 'GET')
+                .done((response) => {
+                    this.renderDetails(response);
+                })
+                .fail(() => {
+                    $('#userDetailsBody').html('<div class="alert alert-danger">Failed to load user details</div>');
+                });
+        },
 
-            renderDetails: function(student) {
-                let classesHtml = '';
-                if (student.classes && student.classes.length > 0) {
-                    classesHtml = '<ul class="list-group">';
-                    student.classes.forEach(cls => {
-                        const statusBadge = cls.isActive ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>';
-                        classesHtml += `
-                            <li class="list-group-item">
-                                <strong>${cls.className}</strong> ${statusBadge}
-                                <br>
-                                <small>Joined: ${new Date(cls.joinedAt).toLocaleDateString()}</small>
-                                ${cls.startDate ? `<br><small>Start: ${new Date(cls.startDate).toLocaleDateString()}</small>` : ''}
-                                ${cls.endDate ? `<br><small>End: ${new Date(cls.endDate).toLocaleDateString()}</small>` : ''}
-                            </li>
-                        `;
-                    });
-                    classesHtml += '</ul>';
-                } else {
-                    classesHtml = '<p class="text-muted">Not enrolled in any classes</p>';
-                }
+        renderDetails: function(user) {
+            const userIsActive = user.userStatus === 'Active';
+            const userStatusBadge = userIsActive ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>';
+            const userHtml = `
+                <h6>Personal Information</h6>
+                <table class="table table-sm table-bordered">
+                    <tr><th>ID:</th><td>${user.id}</td></tr>
+                    <tr><th>Username:</th><td>${user.username}</td></tr>
+                    <tr><th>Full Name:</th><td>${user.fullName}</td></tr>
+                    <tr><th>Email:</th><td>${user.email}</td></tr>
+                    <tr><th>Phone:</th><td>${user.phoneNumber || '-'}</td></tr>
+                    <tr><th>Role:</th><td>${user.roleName}</td></tr>
+                    <tr><th>Status:</th><td>${userStatusBadge}</td></tr>
+                    <tr><th>Created At:</th><td>${new Date(user.createdAt).toLocaleString()}</td></tr>
+                </table>
+            `;
 
-                const html = `
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h6>Personal Information</h6>
-                            <table class="table table-sm">
-                                <tr><th>ID:</th><td>${student.id}</td></tr>
-                                <tr><th>Username:</th><td>${student.username}</td></tr>
-                                <tr><th>Full Name:</th><td>${student.fullName}</td></tr>
-                                <tr><th>Email:</th><td>${student.email}</td></tr>
-                                <tr><th>Phone:</th><td>${student.phoneNumber || '-'}</td></tr>
-                                <tr><th>Status:</th><td>${student.isActive ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>'}</td></tr>
-                            </table>
-                        </div>
-                        <div class="col-md-6">
-                            <h6>Center Information</h6>
-                            <table class="table table-sm">
-                                <tr><th>Center:</th><td>${student.centerName}</td></tr>
-                                <tr><th>Address:</th><td>${student.centerAddress}</td></tr>
-                                <tr><th>Email:</th><td>${student.centerEmail}</td></tr>
-                            </table>
-                        </div>
-                    </div>
-                    <hr>
-                    <h6>Enrolled Classes</h6>
-                    ${classesHtml}
-                `;
-                $('#studentDetailsBody').html(html);
-            },
+            const centerIsActive = user.centerStatus === 'Active';
+            const centerStatusBadge = centerIsActive ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>';
+            const centerHtml = `
+                <h6>Center Information</h6>
+                <table class="table table-sm table-bordered">
+                    <tr><th>ID:</th><td>${user.centerId}</td></tr>
+                    <tr><th>Name:</th><td>${user.centerName}</td></tr>
+                    <tr><th>Address:</th><td>${user.centerAddress || '-'}</td></tr>
+                    <tr><th>Email:</th><td>${user.centerEmail}</td></tr>
+                    <tr><th>Status:</th><td>${centerStatusBadge}</td></tr>
+                </table>
+            `;
 
-            toggleStatus: function(studentId, isActive) {
-                if (!confirm(`Are you sure you want to ${isActive ? 'activate' : 'deactivate'} this student?`)) {
-                    return;
-                }
-
-                const data = { id: studentId, isActive: isActive };
-
-                ApiHelper.request('/api/student/active', 'PUT', data)
-                    .done((response) => {
-                        ApiHelper.showAlert(response.message, 'success');
-                        this.loadStudents();
-                    })
-                    .fail((xhr) => {
-                        const message = xhr.responseJSON?.message || 'Failed to update status';
-                        ApiHelper.showAlert(message, 'danger');
-                    });
-            },
-
-            deleteStudent: function(studentId) {
-                if (!confirm('Are you sure you want to delete this student? This action cannot be undone.')) {
-                    return;
-                }
-
-                ApiHelper.request(`/api/student/${studentId}`, 'DELETE')
-                    .done((response) => {
-                        ApiHelper.showAlert(response.message, 'success');
-                        this.loadStudents();
-                    })
-                    .fail((xhr) => {
-                        const message = xhr.responseJSON?.message || 'Failed to delete student';
-                        ApiHelper.showAlert(message, 'danger');
-                    });
+            let classesHtml = '<h6>Enrolled Classes</h6>';
+            if (user.classes && user.classes.length > 0) {
+                classesHtml += '<ul class="list-group">';
+                user.classes.forEach(cls => {
+                    const classStatus = cls.status === 'Active' ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>';
+                    const startDate = cls.startDate ? new Date(cls.startDate).toLocaleDateString() : 'N/A';
+                    const endDate = cls.endDate ? new Date(cls.endDate).toLocaleDateString() : 'N/A';
+                    
+                    classesHtml += `
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div>
+                                <strong>${cls.className}</strong> (ID: ${cls.classId})
+                                <br><small class="text-muted">Joined: ${new Date(cls.joinedAt).toLocaleDateString()}</small>
+                                <br><small class="text-muted">Time: ${startDate} - ${endDate}</small>
+                            </div>
+                            ${classStatus}
+                        </li>
+                    `;
+                });
+                classesHtml += '</ul>';
+            } else {
+                classesHtml += '<p class="text-muted">Not enrolled in any classes</p>';
             }
-        };
 
-        $(document).ready(() => StudentManager.init());
-    </script>
+            $('#userDetailsBody').html(`
+                <div class="row">
+                    <div class="col-md-6">${userHtml}</div>
+                    <div class="col-md-6">${centerHtml}</div>
+                </div>
+                <hr>
+                ${classesHtml}
+            `);
+        },
+
+        toggleStatus: function(userId, isActive) {
+            const actionText = isActive ? 'activate' : 'deactivate';
+            if (!confirm(`Are you sure you want to ${actionText} this user?`)) {
+                return;
+            }
+
+            ApiHelper.request(`/api/user/users/${userId}/active/${isActive}`, 'PUT')
+                .done((response) => {
+                    ApiHelper.showAlert('Status updated successfully', 'success');
+                    this.loadUsers();
+                })
+                .fail((xhr) => {
+                    const message = xhr.responseJSON?.message || 'Failed to update status';
+                    ApiHelper.showAlert(message, 'danger');
+                });
+        }
+    };
+
+    $(document).ready(() => UserManager.init());
+</script>
 }
-
