@@ -8,6 +8,15 @@ const Auth = {
         });
     },
 
+    register: function (data) {
+        return $.ajax({
+            url: `${API_BASE_URL}/api/auth/register`,
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+        });
+    },
+
     saveJwtToken: function(accessToken, refreshToken) {
         this.saveAccessToken(accessToken);
         localStorage.setItem('refreshToken', refreshToken);
@@ -43,6 +52,18 @@ const Auth = {
             return payload.exp < nowUtcSeconds;
         } catch (e) {
             return true;
+        }
+    },
+
+    getRole: function() {
+        const token = this.getAccessToken();
+        if (!token) return '';
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const roleClaimType = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
+            return payload[roleClaimType] || payload.role || '';
+        } catch (e) {
+            return '';
         }
     },
 

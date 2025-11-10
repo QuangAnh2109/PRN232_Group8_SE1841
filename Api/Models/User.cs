@@ -30,6 +30,9 @@ namespace Api.Models
         public int CenterId { get; set; }
         
         [Required]
+        public Center Center { get; set; } = null!;
+        
+        [Required]
         public DateTime LastModifiedTime { get; set; }
 
         [Required]

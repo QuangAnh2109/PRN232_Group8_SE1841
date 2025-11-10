@@ -54,6 +54,12 @@ namespace Api.Models
                 .HasIndex(cu => new { cu.StudentId, cu.ClassId, cu.IsDeleted})
                 .IsUnique();
 
+            modelBuilder.Entity<Center>()
+                .HasOne(c => c.Manager)
+                .WithMany()
+                .HasForeignKey(c => c.ManagerId)
+                .IsRequired(true);
+            
             foreach (var foreignKey in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
             {
                 foreignKey.DeleteBehavior = DeleteBehavior.Restrict;

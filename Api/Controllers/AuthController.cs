@@ -21,7 +21,7 @@ namespace Api.Controllers
             _logger = logger;
             _accountService = accountService;
         }
-        
+
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterAccountDTO register)
         {
@@ -41,11 +41,12 @@ namespace Api.Controllers
         {
             var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var lastModifiedTime = HttpContext.User.FindFirstValue(ClaimTypes.Version);
-
-            if (userId == null || lastModifiedTime == null) 
+            var tokenId = HttpContext.User.FindFirstValue(JwtRegisteredClaimNames.Jti);
+            
+            if (userId == null || lastModifiedTime == null || tokenId == null)
                 return BadRequest();
             else
-                return Ok(await _accountService.GetAccessTokenAsync(int.Parse(userId), DateTime.Parse(lastModifiedTime)));
+                return Ok(await _accountService.GetAccessTokenAsync(tokenId,int.Parse(userId), DateTime.Parse(lastModifiedTime)));
         }
 
 

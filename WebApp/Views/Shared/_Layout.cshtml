@@ -12,8 +12,8 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Auth" asp-action="Login">
-                    Student Management
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    Dashboard
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -21,13 +21,23 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
+                        <li class="nav-item" style="display: none;" id="classManagerNavItem">
                             <a class="nav-link text-white" asp-area="" asp-controller="Class" asp-action="Index">
                                 Classes
                             </a>
                         </li>
-                        <li class="nav-item" id="studentNavItem">
+                        <li class="nav-item" style="display: none;" id="studentManagerNavItem">
                             <a class="nav-link text-white" asp-area="" asp-controller="Student" asp-action="Index">
+                                Students
+                            </a>
+                        </li>
+                        <li class="nav-item" style="display: none;" id="centerManagerNavItem">
+                            <a class="nav-link text-white" asp-area="" asp-controller="Center" asp-action="Index">
+                                Classes
+                            </a>
+                        </li>
+                        <li class="nav-item" style="display: none;" id="userManagerNavItem">
+                            <a class="nav-link text-white" asp-area="" asp-controller="User" asp-action="Index">
                                 Students
                             </a>
                         </li>
@@ -61,17 +71,22 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script>
         $(document).ready(function() {
-            const token = Auth.getToken();
-            if (token) {
-                try {
-                    const payload = JSON.parse(atob(token.split('.')[1]));
-                    const userRole = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || payload.role;
-                    if (userRole === 'Student') {
-                        $('#studentNavItem').hide();
-                    }
-                } catch (e) {
-                    console.error('Failed to parse token:', e);
+            const userRole = Auth.getRole();
+            console.log(userRole);
+            
+            if (userRole) {
+                if (userRole === 'Student') {
                 }
+                else if(userRole === 'Admin') {
+                    $('#userManagerNavItem').show();
+                    $('#centerManagerNavItem').show();
+                }
+                else if(userRole === 'Teacher') {
+                    $('#classManagerNavItem').show();
+                    $('#userManagerNavItem').show();
+                }
+            } else {
+                Auth.logout();
             }
         });
     </script>

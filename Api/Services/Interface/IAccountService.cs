@@ -12,6 +12,6 @@ namespace Api.Services.Interface
         Task<TokenDTO> GetJwtTokenAsync(LoginDTO login);
 
         //Create access token based on userId and lastModifiedTime
-        Task<string> GetAccessTokenAsync(int userId, DateTime lastModifiedTime);
+        Task<string> GetAccessTokenAsync(string tokenId, int userId, DateTime lastModifiedTime);
     }
 }

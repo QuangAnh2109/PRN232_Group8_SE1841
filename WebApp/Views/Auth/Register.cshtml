@@ -1,0 +1,210 @@
+@{
+ViewData["Title"] = "Register";
+Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .register-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .register-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .register-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .register-header h2 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .register-body {
+            padding: 40px 30px;
+        }
+
+        .form-control {
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        #alertContainer .alert {
+            border-radius: 10px;
+            border: none;
+        }
+
+        .text-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .text-link a {
+            color: #667eea;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .text-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="register-container">
+    <div class="register-card">
+        <div class="register-header">
+            <h2>Create an Account</h2>
+            <p>Join Student Management System</p>
+        </div>
+        <div class="register-body">
+            <div id="alertContainer"></div>
+            <form id="registerForm">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" placeholder="Enter username" required />
+                </div>
+                <div class="mb-3">
+                    <label for="fullname" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="fullname" placeholder="Enter your full name" required />
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" placeholder="Enter your email" required />
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Phone Number (optional)</label>
+                    <input type="tel" class="form-control" id="phone" placeholder="Enter phone number" />
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" placeholder="Enter password" required />
+                </div>
+                <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm your password" required />
+                </div>
+                <button type="submit" class="btn btn-primary btn-register w-100" id="registerBtn">
+                    Register
+                </button>
+            </form>
+
+            <!-- 🔹 Dòng chuyển sang trang login -->
+            <div class="text-link">
+                Already have an account? <a href="/Auth/Login">Login here</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/config.js"></script>
+<script src="~/js/auth.js"></script>
+<script src="~/js/api-helper.js"></script>
+<script>
+    $(document).ready(function () {
+
+        $('#registerForm').submit(function (e) {
+            e.preventDefault();
+
+            const username = $('#username').val().trim();
+            const fullName = $('#fullname').val().trim();
+            const email = $('#email').val().trim();
+            const phone = $('#phone').val().trim();
+            const password = $('#password').val();
+            const confirmPassword = $('#confirmPassword').val();
+
+            if (password !== confirmPassword) {
+                ApiHelper.showAlert('Passwords do not match!', 'danger');
+                return;
+            }
+
+            const data = {
+                username: username,
+                fullName: fullName,
+                email: email,
+                phoneNumber: phone || null,
+                password: password
+            };
+
+            const $registerBtn = $('#registerBtn');
+            $registerBtn.prop('disabled', true).text('Registering...');
+
+            Auth.register(data)
+                .done(function () {
+                    ApiHelper.showAlert(
+                        'Registration successful! Redirecting to login...', 
+                        'success',             
+                        function () {
+                            window.location.href = '/Auth/Login';
+                        }
+                    );
+                })
+                .fail(function (xhr) {
+                    let message = 'Registration failed.';
+                    ApiHelper.showAlert(message, 'danger');
+                })
+                .always(function () {
+                    $registerBtn.prop('disabled', false).text('Register');
+                });
+        });
+    });
+</script>
+</body>
+</html>

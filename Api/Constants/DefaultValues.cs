@@ -12,5 +12,7 @@
         public const string ManagerRole = "Manager";
         public const string TeacherRole = "Teacher";
         public const string StudentRole = "Student";
+        public const int DefaultPage = 1;
+        public const int DefaultLimit = 10;
     }
 }

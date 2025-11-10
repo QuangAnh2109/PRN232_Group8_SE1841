@@ -1,41 +1,45 @@
 using Api.DTO;
 using Api.Models;
 using Api.Services.Interface;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using BCrypt.Net;
 using Api.Constants;
+using Api.Repository.Interface;
 
 namespace Api.Services.Implement
 {
     public class AccountService : IAccountService
     {
-        private readonly AppDbContext _context;
+        private readonly IUserRepository _userRepository;
+        private readonly ITokenRepository _tokenRepository;
+        private readonly ICenterRepository _centerRepository;
         private readonly IConfiguration _configuration;
-
-        public AccountService(AppDbContext context, IConfiguration configuration)
+        
+        public AccountService(IUserRepository userRepository, ICenterRepository centerRepository, ITokenRepository tokenRepository, IConfiguration configuration)
         {
-            _context = context;
+            _userRepository = userRepository;
+            _tokenRepository = tokenRepository;
+            _centerRepository = centerRepository;
             _configuration = configuration;
         }
-
+        
         public async Task RegisterAccountAsync(RegisterAccountDTO register)
         {
-            var existingUser = await _context.Users
-                .Where(u => u.IsDeleted == false && (u.Username == register.Username || u.Email == register.Email))
-                .FirstOrDefaultAsync();
-
-            if (existingUser != null)
+            var center = new Center
             {
-                if (existingUser.Username == register.Username)
-                    throw new InvalidOperationException("Username already exists");
-                if (existingUser.Email == register.Email)
-                    throw new InvalidOperationException("Email already exists");
-            }
-
+                Name = $"Center_{register.Username}_{DateTime.UtcNow}",
+                Address = null,
+                Email = register.Email,
+                PhoneNumber = register.PhoneNumber,
+                ManagerId = 1,
+                CreatedBy = DefaultValues.SystemId,
+                UpdatedBy = DefaultValues.SystemId,
+            };
+            await _centerRepository.AddCenterAsync(center);
+            
             var user = new User
             {
                 Username = register.Username,
@@ -44,27 +48,22 @@ namespace Api.Services.Implement
                 PhoneNumber = register.PhoneNumber,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(register.Password),
                 RoleId = DefaultValues.StudentRoleId,
-                CenterId = 1,
+                CenterId = center.Id,
                 LastModifiedTime = DateTime.UtcNow,
                 CreatedBy = DefaultValues.SystemId,
                 UpdatedBy = DefaultValues.SystemId,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                IsDeleted = false
             };
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            await _userRepository.AddUserAsync(user);
+            center.ManagerId = user.Id;
+            center.UpdatedBy = user.Id;
+            await _centerRepository.UpdateCenterAsync(center);
         }
 
         public async Task<TokenDTO> GetJwtTokenAsync(LoginDTO login)
         {
-            var user = await _context.Users
-                .Include(u => u.Role)
-                .Where(u => u.IsDeleted == false && u.Username == login.Username)
-                .FirstOrDefaultAsync();
+            var user = await _userRepository.GetUsersLoginAsync(login.Username);
 
-            //skip validate password for testing. TODO: update logic verify Hash Password
+            //skip validate password for testing.
             if (user == null)
             {
                 throw new UnauthorizedAccessException("Invalid username or password");
@@ -89,26 +88,24 @@ namespace Api.Services.Implement
                 IsDeleted = false
             };
 
-            _context.Tokens.Add(refreshToken);
-            await _context.SaveChangesAsync();
+            await _tokenRepository.AddTokenAsync(refreshToken);
 
             return new TokenDTO
             {
                 AccessToken = accessToken,
-                RefreshToken = GenerateRefreshToken(refreshToken.Id)
+                RefreshToken = GenerateRefreshToken(refreshToken.Id, user.Id, user.LastModifiedTime)
             };
         }
 
-        public async Task<string> GetAccessTokenAsync(int userId, DateTime lastModifiedTime)
+        public async Task<string> GetAccessTokenAsync(string tokenId, int userId, DateTime lastModifiedTime)
         {
-            var user = await _context.Users
-                .Include(u => u.Role)
-                .Where(u => u.IsDeleted == false && u.Id == userId && u.LastModifiedTime == lastModifiedTime)
-                .FirstOrDefaultAsync();
+            var user = await _userRepository.GetUsersByIdAsync(userId);
 
-            if (user == null)
+            var token = await _tokenRepository.GetTokenByIdAsync(Guid.Parse(tokenId));
+            
+            if (user == null || token == null || user.LastModifiedTime != lastModifiedTime)
             {
-                throw new UnauthorizedAccessException("Invalid user or token expired");
+                throw new UnauthorizedAccessException("Invalid token");
             }
 
             return GenerateAccessToken(user);
@@ -122,18 +119,19 @@ namespace Api.Services.Implement
                 new Claim(ClaimTypes.Role, user.Role.Name),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Name, user.FullName),
-                new Claim(ClaimTypes.Version, user.LastModifiedTime.ToString("o")),
             };
             var expireMinutes = int.Parse(_configuration["Jwt:AccessTokenExpireMinutes"] ?? "60");
 
             return GenerateJwtToken(claims, DateTime.UtcNow.AddMinutes(expireMinutes));
         }
         
-        private string GenerateRefreshToken(Guid RefreshTokenId)
+        private string GenerateRefreshToken(Guid RefreshTokenId, int userId, DateTime LastModifiedTime)
         {
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, RefreshTokenId.ToString())
+                new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, RefreshTokenId.ToString()),
+                new Claim(ClaimTypes.Version, LastModifiedTime.ToString("o"))
             };
             var expireDays = int.Parse(_configuration["Jwt:RefreshTokenExpireDays"] ?? "7");
             return GenerateJwtToken(claims, DateTime.UtcNow.AddDays(expireDays));

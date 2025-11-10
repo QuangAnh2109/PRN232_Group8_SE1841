@@ -1,4 +1,5 @@
-﻿using Api.DTO;
+﻿using Api.Constants;
+using Api.DTO;
 using Api.Services.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,16 +21,22 @@ namespace Api.Controllers
         }
 
         [HttpGet("users")]
-        public async Task<IActionResult> ChangeUserActivity([FromBody] Models.User user)
+        public async Task<IActionResult> GetAllUser([FromQuery] int page = DefaultValues.DefaultPage,[FromQuery] int limit = DefaultValues.DefaultLimit)
         {
-            throw new NotImplementedException();
+            return Ok(await _userService.GetAllUsersWithPaginationAsync(page, limit));
         }
 
-        [HttpPut("users/active")]
-        public async Task<IActionResult> CreateUser([FromBody] IEnumerable<int> userId)
+        [HttpPut("users/{id:int}/active/{isActive:bool}")]
+        public async Task<IActionResult> ChangeUserActivity(int id, bool isActive)
         {
-            throw new NotImplementedException();
+            await _userService.ChangeUserActivityAsync(id, isActive);
+            return Ok();
         }
 
+        [HttpGet("users/{id:int}/details")]
+        public async Task<IActionResult> GetUserDetails(int id)
+        {
+            return Ok(await _userService.GetUserDetailsByIdAsync(id));
+        }
     }
 }

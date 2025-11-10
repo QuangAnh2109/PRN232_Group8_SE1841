@@ -5,39 +5,24 @@
 <div class="text-center mt-5">
     <h1 class="display-4">PRN232 Group 8 - SE1841</h1>
     <p class="lead">Student & Class Management System</p>
-    <hr class="my-4">
-    <div class="mt-4">
-        <a href="/Auth/Login" class="btn btn-primary btn-lg">Teacher Login</a>
-        <a href="/Class/Index" class="btn btn-secondary btn-lg">Class Management</a>
-        <a href="/Student/Index" class="btn btn-info btn-lg">Student Management</a>
-    </div>
-    <div class="mt-5">
-        <h4>Features:</h4>
-        <div class="row mt-3">
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Class Management</h5>
-                        <p class="card-text">Create, update, and manage classes across different centers</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Student Management</h5>
-                        <p class="card-text">Add students, view details, and manage enrollment</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Authentication</h5>
-                        <p class="card-text">Secure login with JWT token-based authentication</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            const userRole = Auth.getRole();
+            console.log(userRole);
+            
+            if (userRole) {
+                if (userRole === 'Student') {
+                }
+                else if(userRole === 'Admin') {
+                }
+                else if(userRole === 'Teacher') {
+                }
+            } else {
+                Auth.logout();
+            }
+        });
+    </script>
+}

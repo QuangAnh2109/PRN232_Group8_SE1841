@@ -19,16 +19,25 @@ const ApiHelper = {
         });
     },
 
-    showAlert: function(message, type = 'success') {
+    showAlert: function (message, type = 'info', onClose = null) {
         const alertHtml = `
             <div class="alert alert-${type} alert-dismissible fade show" role="alert">
                 ${message}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         `;
-        $('#alertContainer').html(alertHtml);
+
+        const $alert = $(alertHtml);
+        $('#alertContainer').html($alert);
+
+        if (typeof onClose === 'function') {
+            $alert.on('closed.bs.alert', function () {
+                onClose();
+            });
+        }
+
         setTimeout(() => {
-            $('.alert').alert('close');
+            $alert.alert('close');
         }, 3000);
     }
 };
