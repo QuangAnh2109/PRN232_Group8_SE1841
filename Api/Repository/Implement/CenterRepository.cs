@@ -36,9 +36,7 @@ public class CenterRepository : ICenterRepository
                         c.Address != center.Address ||
                         c.Email != center.Email ||
                         c.PhoneNumber != center.PhoneNumber ||
-                        c.IsActive != center.IsActive ||
-                        c.Users != center.Users ||
-                        c.Classes != center.Classes
+                        c.IsActive != center.IsActive
                     )
                 )
                 .ExecuteUpdateAsync(setter => setter
@@ -48,8 +46,6 @@ public class CenterRepository : ICenterRepository
                     .SetProperty(c => c.Email, center.Email)
                     .SetProperty(c => c.PhoneNumber, center.PhoneNumber)
                     .SetProperty(c => c.IsActive, center.IsActive)
-                    .SetProperty(c => c.Users, center.Users)
-                    .SetProperty(c => c.Classes, center.Classes)
                     .SetProperty(c => c.RecordNumber, c => c.RecordNumber + 1)
                     .SetProperty(c => c.UpdatedAt, DateTime.UtcNow)
                     .SetProperty(c => c.UpdatedBy, center.UpdatedBy)
@@ -116,7 +112,7 @@ public class CenterRepository : ICenterRepository
     {
         try
         {
-            var centerDetailTask = _context.Centers
+            var centerDetail = await _context.Centers
                 .Where(c => c.Id == id && c.IsDeleted == false)
                 .Select(c => new CenterDetailDto
                 {
@@ -134,7 +130,7 @@ public class CenterRepository : ICenterRepository
                 })
                 .FirstAsync();
 
-            var classesTask = _context.Classes
+            centerDetail.Classes = await _context.Classes
                 .Where(c => c.CenterId == id && c.IsDeleted == false)
                 .Select(c => new ClassDto
                 {
@@ -147,7 +143,7 @@ public class CenterRepository : ICenterRepository
                 })
                 .ToListAsync();
 
-            var userDetailTask = _context.Users
+            centerDetail.Users = await _context.Users
                 .Where(u => u.CenterId == id && u.IsDeleted == false)
                 .Select(u => new UserAdminDto
                 {
@@ -161,11 +157,7 @@ public class CenterRepository : ICenterRepository
                     Status = u.IsActive ? "Active" : "Inactive"
                 })
                 .ToListAsync();
-            await Task.WhenAll(centerDetailTask, classesTask, userDetailTask);
-
-            var centerDetail = await centerDetailTask;
-            centerDetail.Classes = await classesTask;
-            centerDetail.Users = await userDetailTask;
+            
             return centerDetail;
         }
         catch (Exception e)
@@ -173,5 +165,12 @@ public class CenterRepository : ICenterRepository
             _logger.LogError("Lỗi khi lấy thông tin chi tiết center theo ID: {Message}", e.Message);
             throw;
         }
+    }
+
+    public Task<Center> GetCenterByIdAsync(int id)
+    {
+        return _context.Centers
+            .Where(c => c.Id == id && c.IsDeleted == false)
+            .FirstAsync();
     }
 }

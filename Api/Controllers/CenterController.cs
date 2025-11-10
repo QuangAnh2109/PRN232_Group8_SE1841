@@ -1,4 +1,5 @@
-﻿using Api.Services.Interface;
+﻿using Api.Constants;
+using Api.Services.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,15 +19,22 @@ namespace Api.Controllers
         }
 
         [HttpGet("centers")]
-        public async Task<IActionResult> GetAllCenters()
+        public async Task<IActionResult> GetAllCenters([FromQuery] int page = DefaultValues.DefaultPage, [FromQuery] int limit = DefaultValues.DefaultLimit)
         {
-            throw new NotImplementedException();
+            return Ok(await _centerService.GetAllCentersWithPaginationAsync(page, limit));
         }
 
         [HttpPut("centers/{id:int}/active/{isActive:bool}")]
         public async Task<IActionResult> ChangeCenterActivity(int id, bool isActive)
         {
-            throw new NotImplementedException();
+            await _centerService.ChangeCenterActivityAsync(id, isActive);
+            return Ok();
+        }
+
+        [HttpGet("centers/{id:int}/details")]
+        public async Task<IActionResult> GetCenterDetailsById(int id)
+        {
+            return Ok(await _centerService.GetCenterDetailsByIdAsync(id));
         }
     }
 }

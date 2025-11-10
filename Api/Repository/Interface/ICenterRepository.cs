@@ -9,5 +9,6 @@ namespace Api.Repository.Interface
         Task UpdateCenterAsync(Center center);
         Task<PaginationResult<CenterDto>> GetAllCentersWithPaginationAsync(int page, int limit);
         Task<CenterDetailDto> GetCenterDetailsByIdAsync(int id);
+        Task<Center> GetCenterByIdAsync(int id);
     }
 }

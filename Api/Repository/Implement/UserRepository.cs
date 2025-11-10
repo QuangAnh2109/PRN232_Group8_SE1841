@@ -130,7 +130,7 @@ namespace Api.Repository.Implement
         {
             try
             {
-                var userDetailTask = _context.Users
+                var userDetail = await _context.Users
                     .Where(u => u.Id == id && u.IsDeleted == false)
                     .Select(u => new UserDetailAdminDto
                     {
@@ -151,7 +151,7 @@ namespace Api.Repository.Implement
                     })
                     .FirstAsync();
 
-                var classesTask = _context.ClassStudents
+                userDetail.Classes = await _context.ClassStudents
                     .Where(cs => cs.StudentId == id && cs.IsDeleted == false)
                     .Select(cs => new ClassInfo
                     {
@@ -163,11 +163,7 @@ namespace Api.Repository.Implement
                         Status = cs.Class.IsActive ? "Active" : "Inactive"
                     })
                     .ToListAsync();
-
-                await Task.WhenAll(userDetailTask, classesTask);
-
-                var userDetail = await userDetailTask;
-                userDetail.Classes = await classesTask;
+                
                 return userDetail;
             }
             catch (Exception e)

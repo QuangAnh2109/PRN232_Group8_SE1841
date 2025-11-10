@@ -21,10 +21,10 @@ namespace Api.Models
         public string Email { get; set; } = null!;
 
         [Phone]
-        public string? PhoneNumber { get; set; } = null!;
-        
-        [Required]
-        public User Manager { get; set; }
+        public string? PhoneNumber { get; set; }
+
+        [Required] 
+        public User Manager { get; set; } = null!;
 
         public ICollection<User>? Users { get; set; }
 
