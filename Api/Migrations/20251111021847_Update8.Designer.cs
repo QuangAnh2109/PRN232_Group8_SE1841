@@ -4,6 +4,7 @@ using Api.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251111021847_Update8")]
+    partial class Update8
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -532,7 +535,7 @@ namespace Api.Migrations
                             IsActive = true,
                             IsDeleted = false,
                             LastModifiedTime = new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local),
-                            PasswordHash = "",
+                            PasswordHash = "$2a$11$1d46SJBejzJx78nxb6Fthu1Vo/dpR9DxEMQ0PSDC.QJJ5LfxUqKyS",
                             RecordNumber = 1,
                             RoleId = 1,
                             UpdatedAt = new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local),

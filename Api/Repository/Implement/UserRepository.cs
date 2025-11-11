@@ -188,5 +188,43 @@ namespace Api.Repository.Implement
                 .Where(u => u.IsDeleted == false)
                 .ToListAsync();
         }
+
+        public async Task UpdateUserAsync(User user)
+        {
+            try
+            {
+                var affectedRows = await _context.Users
+                    .Where(u => u.Id == user.Id &&
+                        u.RecordNumber == user.RecordNumber &&
+                        u.IsDeleted == false && (
+                            u.Username != user.Username ||
+                            u.FullName != user.FullName ||
+                            u.Email != user.Email ||
+                            u.PhoneNumber != user.PhoneNumber ||
+                            u.CenterId != user.CenterId
+                        )
+                    )
+                    .ExecuteUpdateAsync(setter => setter
+                        .SetProperty(u => u.Username, user.Username)
+                        .SetProperty(u => u.FullName, user.FullName)
+                        .SetProperty(u => u.Email, user.Email)
+                        .SetProperty(u => u.PhoneNumber, user.PhoneNumber)
+                        .SetProperty(u => u.CenterId, user.CenterId)
+                        .SetProperty(u => u.RecordNumber, c => c.RecordNumber + 1)
+                        .SetProperty(u => u.UpdatedAt, DateTime.UtcNow)
+                        .SetProperty(u => u.UpdatedBy, user.UpdatedBy)
+                    );
+
+                if (affectedRows == 0)
+                {
+                    throw new Exception("Dữ liệu không thay đổi");
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Lỗi khi cập nhật người dùng: {Message}", e.Message);
+                throw;
+            }
+        }
     }
 }

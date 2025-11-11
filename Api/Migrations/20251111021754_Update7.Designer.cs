@@ -4,6 +4,7 @@ using Api.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251111021754_Update7")]
+    partial class Update7
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -525,17 +528,17 @@ namespace Api.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local),
+                            CreatedAt = new DateTime(2025, 11, 11, 2, 17, 54, 468, DateTimeKind.Utc).AddTicks(9800),
                             CreatedBy = 0,
                             Email = "admin@gmail.com",
                             FullName = "System Administrator",
                             IsActive = true,
                             IsDeleted = false,
-                            LastModifiedTime = new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local),
-                            PasswordHash = "",
+                            LastModifiedTime = new DateTime(2025, 11, 11, 2, 17, 54, 468, DateTimeKind.Utc).AddTicks(9633),
+                            PasswordHash = "$2a$11$SWzfYhnwGx.8jgmxip/vtedd7cJvKf07YFOsE3GbsfvxksvEh.UTG",
                             RecordNumber = 1,
                             RoleId = 1,
-                            UpdatedAt = new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local),
+                            UpdatedAt = new DateTime(2025, 11, 11, 2, 17, 54, 468, DateTimeKind.Utc).AddTicks(9802),
                             UpdatedBy = 0,
                             Username = "admin"
                         });

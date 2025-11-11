@@ -7,8 +7,8 @@ namespace Api.DTO
         public string FullName { get; set; } = null!;
         public string Email { get; set; } = null!;
         public string? PhoneNumber { get; set; }
-        public int CenterId { get; set; }
-        public string CenterName { get; set; } = null!;
+        public int? CenterId { get; set; }
+        public string? CenterName { get; set; }
         public string CenterAddress { get; set; } = null!;
         public string CenterEmail { get; set; } = null!;
         public bool IsActive { get; set; }

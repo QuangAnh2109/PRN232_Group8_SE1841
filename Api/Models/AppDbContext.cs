@@ -51,7 +51,7 @@ namespace Api.Models
                 .IsUnique();
 
             modelBuilder.Entity<ClassStudent>()
-                .HasIndex(cu => new { cu.StudentId, cu.ClassId, cu.IsDeleted})
+                .HasIndex(cu => new { cu.StudentId, cu.ClassId, cu.IsDeleted })
                 .IsUnique();
 
             modelBuilder.Entity<Center>()
@@ -59,7 +59,7 @@ namespace Api.Models
                 .WithMany()
                 .HasForeignKey(c => c.ManagerId)
                 .IsRequired(true);
-            
+
             foreach (var foreignKey in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
             {
                 foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
@@ -113,6 +113,23 @@ namespace Api.Models
                     CreatedAt = DateTime.Parse("2025-01-01T00:00:00Z"),
                     UpdatedAt = DateTime.Parse("2025-01-01T00:00:00Z"),
                     IsDeleted = false,
+                }
+            );
+
+            modelBuilder.Entity<User>().HasData(
+                new User
+                {
+                    Id = 1,
+                    Username = "admin",
+                    FullName = "System Administrator",
+                    Email = "admin@gmail.com",
+                    PasswordHash = "",
+                    RoleId = DefaultValues.AdminRoleId,
+                    LastModifiedTime = DateTime.Parse("2025-01-01T00:00:00Z"),
+                    CreatedBy = DefaultValues.SystemId,
+                    UpdatedBy = DefaultValues.SystemId,
+                    CreatedAt = DateTime.Parse("2025-01-01T00:00:00Z"),
+                    UpdatedAt = DateTime.Parse("2025-01-01T00:00:00Z")
                 }
             );
         }

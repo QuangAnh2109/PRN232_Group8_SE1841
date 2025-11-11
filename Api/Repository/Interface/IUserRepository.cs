@@ -12,5 +12,6 @@ namespace Api.Repository.Interface
         Task<UserDetailAdminDto> GetUserDetailsByIdAsync(int id);
         Task AddUserAsync(User user);
         Task<IEnumerable<User>> GetAllUsersAsync();
+        Task UpdateUserAsync(User user);
     }
 }

@@ -4,6 +4,7 @@ using Api.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251111021612_Update6")]
+    partial class Update6
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -520,25 +523,6 @@ namespace Api.Migrations
                         .HasFilter("[IsDeleted] IS NOT NULL");
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local),
-                            CreatedBy = 0,
-                            Email = "admin@gmail.com",
-                            FullName = "System Administrator",
-                            IsActive = true,
-                            IsDeleted = false,
-                            LastModifiedTime = new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local),
-                            PasswordHash = "",
-                            RecordNumber = 1,
-                            RoleId = 1,
-                            UpdatedAt = new DateTime(2025, 1, 1, 7, 0, 0, 0, DateTimeKind.Local),
-                            UpdatedBy = 0,
-                            Username = "admin"
-                        });
                 });
 
             modelBuilder.Entity("Api.Models.Attendance", b =>

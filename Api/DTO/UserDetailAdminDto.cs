@@ -9,8 +9,8 @@ public class UserDetailAdminDto
     public string? PhoneNumber { get; set; }
     public string RoleName { get; set; } = null!;
     public string UserStatus { get; set; } = null!;
-    public int CenterId { get; set; }
-    public string CenterName { get; set; } = null!;
+    public int? CenterId { get; set; }
+    public string? CenterName { get; set; }
     public string? CenterAddress { get; set; } = null!;
     public string CenterEmail { get; set; } = null!;
     public string CenterStatus { get; set; } = null!;

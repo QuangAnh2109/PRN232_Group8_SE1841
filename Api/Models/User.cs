@@ -25,12 +25,10 @@ namespace Api.Models
         [Required]
         public string PasswordHash { get; set; } = null!;
 
-        [Required]
         [ForeignKey(nameof(Api.Models.Center))]
-        public int CenterId { get; set; }
+        public int? CenterId { get; set; }
         
-        [Required]
-        public Center Center { get; set; } = null!;
+        public Center? Center { get; set; } = null!;
         
         [Required]
         public DateTime LastModifiedTime { get; set; }

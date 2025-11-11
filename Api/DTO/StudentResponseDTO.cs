@@ -7,11 +7,10 @@ namespace Api.DTO
         public string FullName { get; set; } = null!;
         public string Email { get; set; } = null!;
         public string? PhoneNumber { get; set; }
-        public int CenterId { get; set; }
-        public string CenterName { get; set; } = null!;
+        public int? CenterId { get; set; }
+        public string? CenterName { get; set; } = null!;
         public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime LastModifiedTime { get; set; }
     }
 }
-

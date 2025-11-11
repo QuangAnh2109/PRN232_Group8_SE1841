@@ -28,52 +28,47 @@ namespace Api.Services.Implement
         
         public async Task RegisterAccountAsync(RegisterAccountDTO register)
         {
+            var user = new User
+            {
+                Username = register.Username,
+                FullName = register.FullName,
+                Email = register.Email,
+                PhoneNumber = register.PhoneNumber, 
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(register.Password),
+                RoleId = DefaultValues.TeacherRoleId,
+                LastModifiedTime = DateTime.UtcNow,
+                CreatedBy = DefaultValues.SystemId,
+                UpdatedBy = DefaultValues.SystemId,
+            };
+            await _userRepository.AddUserAsync(user);
+
+
             var center = new Center
             {
                 Name = $"Center_{register.Username}_{DateTime.UtcNow}",
                 Address = null,
                 Email = register.Email,
                 PhoneNumber = register.PhoneNumber,
-                ManagerId = 1,
+                ManagerId = user.Id,
                 CreatedBy = DefaultValues.SystemId,
                 UpdatedBy = DefaultValues.SystemId,
             };
             await _centerRepository.AddCenterAsync(center);
             
-            var user = new User
-            {
-                Username = register.Username,
-                FullName = register.FullName,
-                Email = register.Email,
-                PhoneNumber = register.PhoneNumber,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(register.Password),
-                RoleId = DefaultValues.StudentRoleId,
-                CenterId = center.Id,
-                LastModifiedTime = DateTime.UtcNow,
-                CreatedBy = DefaultValues.SystemId,
-                UpdatedBy = DefaultValues.SystemId,
-            };
-            await _userRepository.AddUserAsync(user);
-            center.ManagerId = user.Id;
-            center.UpdatedBy = user.Id;
-            await _centerRepository.UpdateCenterAsync(center);
+            user.CenterId = center.Id;
+            user.UpdatedBy = user.Id;
+            await _userRepository.UpdateUserAsync(user);
         }
 
         public async Task<TokenDTO> GetJwtTokenAsync(LoginDTO login)
         {
             var user = await _userRepository.GetUsersLoginAsync(login.Username);
 
-            //skip validate password for testing.
-            if (user == null)
+
+            if (user == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.PasswordHash))
             {
                 throw new UnauthorizedAccessException("Invalid username or password");
             }
-
-
-            //if (user == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.PasswordHash))
-            //{
-            //    throw new UnauthorizedAccessException("Invalid username or password");
-            //}
             var accessToken = GenerateAccessToken(user);
 
             var refreshToken = new Token
